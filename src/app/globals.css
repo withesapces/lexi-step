@@ -2,20 +2,221 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Définition des variables CSS globales */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --primary-color: #3b82f6;       /* Bleu principal */
+  --secondary-color: #10b981;     /* Vert secondaire */
+  --text-color: #111827;          /* Gris foncé pour le texte */
+  --background-color: #f3f4f6;      /* Fond clair */
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* Global : typographie et transitions */
+body {
+  @apply font-sans antialiased;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  transition: background-color 0.3s, color 0.3s;
+}
+
+/* Container principal de l'application */
+.app-container {
+  @apply min-h-screen mx-auto p-8 bg-white rounded-xl;
+  width: 720px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1),
+              0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  border: 3px solid var(--text-color);
+  transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
+}
+
+/* Header */
+.header {
+  @apply flex justify-between items-center border-b-2 pb-4 mb-8;
+  border-color: var(--text-color);
+}
+.logo {
+  @apply text-2xl font-extrabold;
+  color: var(--primary-color);
+}
+
+/* Section du Daily Challenge */
+.daily-challenge {
+  @apply bg-[var(--secondary-color)] text-white p-4 text-center font-bold rounded-lg mb-6 border;
+  border-color: var(--text-color);
+  box-shadow: 4px 4px 0 var(--text-color);
+}
+
+/* Zone d’écriture */
+.writing-area {
+  @apply relative;
+}
+textarea {
+  @apply w-full min-h-[300px] p-4 border rounded-lg text-base leading-6 resize-y bg-white;
+  border: 2px solid var(--text-color);
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+}
+
+/* Boutons d’action */
+.action-buttons {
+  @apply flex justify-between mt-12;
+}
+.btn {
+  @apply px-4 py-3 border rounded-lg font-bold cursor-pointer transition-all;
+  border: 2px solid var(--text-color);
+  background-color: white;
+  box-shadow: 4px 4px 0 var(--text-color);
+}
+.btn:hover {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 var(--text-color);
+}
+.btn-primary {
+  @apply bg-[var(--primary-color)] text-white;
+}
+
+/* Barre de progression */
+.progress-container {
+  @apply mt-6;
+}
+.progress-bar {
+  @apply relative w-full h-6 bg-white border rounded-lg overflow-hidden;
+  border: 2px solid var(--text-color);
+  box-shadow: 4px 4px 0 var(--text-color);
+}
+.progress-fill {
+  @apply h-full transition-all ease-in-out;
+  background-color: var(--primary-color);
+  width: 0%;
+}
+
+/* Styles des paliers */
+.milestone {
+  @apply absolute top-1 w-5 h-5 bg-[var(--secondary-color)] border rounded-full text-xs font-bold text-white flex items-center justify-center;
+  border: 2px solid var(--text-color);
+  transition: transform 0.3s;
+}
+.milestone[data-milestone="50"] {
+  left: 25%;
+  transform: translateX(-50%);
+}
+.milestone[data-milestone="100"] {
+  left: 50%;
+  transform: translateX(-50%);
+}
+.milestone[data-milestone="150"] {
+  left: 75%;
+  transform: translateX(-50%);
+}
+.milestone[data-milestone="200"] {
+  left: 100%;
+  transform: translateX(-100%);
+}
+.milestone.active {
+  animation: milestone-bounce 0.5s ease;
+}
+@keyframes milestone-bounce {
+  0% { transform: translateX(-50%) scale(1); }
+  50% { transform: translateX(-50%) scale(1.3); }
+  100% { transform: translateX(-50%) scale(1); }
+}
+
+/* Modal */
+.modal {
+  @apply fixed inset-0 z-50 hidden bg-black bg-opacity-60;
+}
+.modal-content {
+  @apply bg-white m-10 p-8 border rounded-xl shadow-lg text-center;
+  border: 3px solid var(--text-color);
+  max-width: 500px;
+  width: 90%;
+}
+.modal-content p {
+  @apply mb-4;
+}
+.modal .close {
+  @apply float-right text-2xl font-bold cursor-pointer;
+  color: var(--text-color);
+}
+.btn-copy {
+  @apply bg-[var(--primary-color)] text-white border transition-colors;
+  border: 2px solid var(--text-color);
+}
+.btn-copy.copied {
+  background-color: var(--secondary-color);
+}
+
+/* Sélecteur de goal */
+.goal-selector {
+  @apply mb-6 text-center;
+}
+.goal-selector label {
+  @apply block mb-2 font-bold;
+  color: var(--text-color);
+}
+#goal-range {
+  @apply w-full border rounded-lg p-2 bg-transparent;
+  border: 2px solid var(--text-color);
+}
+
+/* Section Challenge (optionnelle) */
+.challenge-section {
+  @apply bg-white border rounded-xl p-6 mb-8 shadow;
+  border: 2px solid var(--text-color);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.challenge-section:hover {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 var(--text-color);
+}
+.challenge-controls {
+  @apply flex flex-wrap gap-4 mb-6;
+}
+.difficulty-selector {
+  @apply flex-1 min-w-[250px];
+}
+.difficulty-selector label {
+  @apply block mb-2 font-semibold;
+  color: var(--text-color);
+}
+.difficulty-select {
+  @apply w-full p-3 border rounded-lg bg-white text-base transition-all;
+  border: 2px solid var(--text-color);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1em;
+}
+.difficulty-select:hover {
+  border-color: var(--primary-color);
+}
+.difficulty-select:focus {
+  @apply outline-none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+#generate-topic {
+  @apply min-w-[150px] bg-[var(--primary-color)] text-white self-end;
+}
+
+/* Adaptations responsives */
+@media (max-width: 768px) {
+  .app-container {
+    @apply p-4 mx-4;
+  }
+  .action-buttons {
+    @apply flex-col gap-4;
+  }
+  .btn {
+    @apply w-full;
   }
 }
-
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+@media (max-width: 640px) {
+  .challenge-controls {
+    @apply flex-col gap-4;
+  }
+  #generate-topic {
+    @apply w-full;
+  }
+  .difficulty-selector {
+    @apply min-w-full;
+  }
 }

@@ -1,101 +1,95 @@
-import Image from "next/image";
+"use client";
+
+import { useState, useEffect } from "react";
+import Navbar from "./components/Navbar";
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [text, setText] = useState("");
+  const [wordCount, setWordCount] = useState(0);
+  const [dailyTopic, setDailyTopic] = useState("Tap 'New Challenge' to start your writing journey");
+  const [maxWords, setMaxWords] = useState(200);
+  const [darkMode, setDarkMode] = useState(false);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+  const challenges = [
+    "Describe your ideal day with no constraints.",
+    "If you could talk to your 10-year-old self, what would you say?",
+    "Tell a funny anecdote that happened to you.",
+  ];
+
+  useEffect(() => {
+    setWordCount(
+      text.trim().split(/\s+/).filter((word) => word.length > 0).length
+    );
+  }, [text]);
+
+  const generateTopic = () => {
+    setDailyTopic(challenges[Math.floor(Math.random() * challenges.length)]);
+  };
+
+  return (
+    <>
+      <Navbar />
+      <div className="max-w-3xl mx-auto p-10">
+        <div className={`app-container ${darkMode ? "dark-mode" : ""}`}>
+          {/* Challenge Section */}
+          <div className="challenge-section">
+            <div className="challenge-controls flex flex-wrap gap-4">
+              {/* Vous pouvez ajouter ici un sélecteur de difficulté si besoin */}
+              <button onClick={generateTopic} className="btn" id="generate-topic">
+                New Challenge
+              </button>
+            </div>
+            <div className="daily-challenge" id="daily-topic">
+              {dailyTopic}
+            </div>
+          </div>
+
+          {/* Goal Section */}
+          <div className="goal-selector">
+            <label htmlFor="goal-range">
+              Daily word count goal: <span id="goal-value">{maxWords}</span>
+            </label>
+            <input
+              type="range"
+              id="goal-range"
+              min="200"
+              max="1000"
+              step="100"
+              value={maxWords}
+              onChange={(e) => setMaxWords(Number(e.target.value))}
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+          </div>
+
+          {/* Writing Section */}
+          <div className="writing-area">
+            <textarea
+              placeholder="Start writing your thoughts..."
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+            ></textarea>
+            <div id="word-count">Words: {wordCount}</div>
+          </div>
+
+          {/* Progress Section */}
+          <div className="progress-container">
+            <div className="progress-bar">
+              <div
+                className="progress-fill"
+                style={{ width: `${Math.min((wordCount / maxWords) * 100, 100)}%` }}
+              ></div>
+              {/* Vous pouvez ajouter ici les éléments "milestone" si nécessaire */}
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="action-buttons">
+            <button className="btn btn-primary" id="save-text">
+              Save Progress
+            </button>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+      </div>
+
+    </>
   );
 }
