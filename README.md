@@ -36,6 +36,8 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 
 - LEXISTEP
+  - lib
+    - prisma.ts
   - prisma
     - schema.prisma
     - migrations
@@ -47,6 +49,8 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
         - register
           - route.ts
     - auth
+      - [...nextauth]
+        - route.ts
       - login
         - page.tsx
       - register
@@ -57,9 +61,12 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
       - page.tsx
     - account
       - page.tsx
+  - middleware.ts
   - globals.css
   - layout.tsx
   - page.tsx (le carnet d'écriture)
+  - next-auth.d.ts
+  - providers.tsx
   - public
   - node_modules
   - .gitignore

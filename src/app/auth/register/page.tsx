@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { FcGoogle } from "react-icons/fc";
+import { signIn } from "next-auth/react";
 
 export default function Register() {
   const [formData, setFormData] = useState({
@@ -21,9 +22,9 @@ export default function Register() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-  
+
     console.log("Données envoyées :", JSON.stringify(formData));
-  
+
     try {
       const response = await fetch("/api/auth/register", {
         method: "POST",
@@ -32,24 +33,36 @@ export default function Register() {
         },
         body: JSON.stringify(formData),
       });
-  
+
       console.log("Réponse brute :", response);
-  
+
       const data = await response.json();
-  
+
       if (response.ok) {
         alert("Inscription réussie !");
-        window.location.href = "/auth/login";
+        // Connecter directement l'utilisateur avec NextAuth
+        const res = await signIn("credentials", {
+          redirect: false,
+          email: formData.email,
+          password: formData.password,
+        });
+        if (res?.ok) {
+          window.location.href = "/";
+        } else {
+          // Si l'authentification échoue, rediriger vers login
+          window.location.href = "/auth/login";
+        }
       } else {
         alert("Erreur : " + data.message);
       }
+
     } catch (error) {
       console.error("Erreur lors de l'inscription :", error);
       alert("Erreur serveur");
     }
   };
-  
-   
+
+
 
   const handleGoogleSignIn = () => {
     // Placeholder pour la connexion avec Google
