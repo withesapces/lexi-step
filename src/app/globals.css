@@ -21,12 +21,14 @@ body {
 /* Container principal de l'application */
 .app-container {
   @apply min-h-screen mx-auto p-8 bg-white rounded-xl;
-  width: 720px;
+  max-width: 720px;
+  width: 100%;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1),
               0 10px 15px -3px rgba(0, 0, 0, 0.1);
   border: 3px solid var(--text-color);
   transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
 }
+
 
 /* Header */
 .header {
@@ -200,7 +202,7 @@ textarea {
 /* Adaptations responsives */
 @media (max-width: 768px) {
   .app-container {
-    @apply p-4 mx-4;
+    @apply p-4 mx-0;
   }
   .action-buttons {
     @apply flex-col gap-4;

@@ -29,12 +29,13 @@ export default function Home() {
   return (
     <>
       <Navbar />
-      <div className="max-w-3xl mx-auto p-10">
+      {/* Wrapper global pour centrer le contenu avec un padding adapté */}
+      <div className="px-4 py-8">
+        {/* Le conteneur principal utilise .app-container qui est désormais responsive */}
         <div className={`app-container ${darkMode ? "dark-mode" : ""}`}>
           {/* Challenge Section */}
           <div className="challenge-section">
-            <div className="challenge-controls flex flex-wrap gap-4">
-              {/* Vous pouvez ajouter ici un sélecteur de difficulté si besoin */}
+            <div className="challenge-controls flex flex-wrap gap-4 mb-4">
               <button onClick={generateTopic} className="btn" id="generate-topic">
                 New Challenge
               </button>
@@ -45,7 +46,7 @@ export default function Home() {
           </div>
 
           {/* Goal Section */}
-          <div className="goal-selector">
+          <div className="goal-selector mb-6">
             <label htmlFor="goal-range">
               Daily word count goal: <span id="goal-value">{maxWords}</span>
             </label>
@@ -57,39 +58,41 @@ export default function Home() {
               step="100"
               value={maxWords}
               onChange={(e) => setMaxWords(Number(e.target.value))}
+              className="w-full mt-2"
             />
           </div>
 
           {/* Writing Section */}
-          <div className="writing-area">
+          <div className="writing-area mb-6">
             <textarea
               placeholder="Start writing your thoughts..."
               value={text}
               onChange={(e) => setText(e.target.value)}
+              className="w-full border border-gray-300 p-4 rounded-lg"
             ></textarea>
-            <div id="word-count">Words: {wordCount}</div>
+            <div id="word-count" className="text-right mt-2 font-bold">
+              Words: {wordCount}
+            </div>
           </div>
 
           {/* Progress Section */}
-          <div className="progress-container">
+          <div className="progress-container mb-6">
             <div className="progress-bar">
               <div
                 className="progress-fill"
                 style={{ width: `${Math.min((wordCount / maxWords) * 100, 100)}%` }}
               ></div>
-              {/* Vous pouvez ajouter ici les éléments "milestone" si nécessaire */}
             </div>
           </div>
 
           {/* Action Buttons */}
           <div className="action-buttons">
-            <button className="btn btn-primary" id="save-text">
+            <button className="btn btn-primary w-full" id="save-text">
               Save Progress
             </button>
           </div>
         </div>
       </div>
-
     </>
   );
 }
