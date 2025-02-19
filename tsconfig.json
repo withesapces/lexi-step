@@ -20,9 +20,8 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"],
-      "@/lib/*": ["./lib/*"]
-    }
+      "@/*": ["./*"]
+    },
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "next-auth.d.ts", "src/middleware.ts"],
   "exclude": ["node_modules"]

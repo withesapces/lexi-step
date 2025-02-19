@@ -21,7 +21,7 @@ export default function Login() {
       password: formData.password,
     });
     if (res?.ok) {
-      window.location.href = "/"; // Rediriger vers la page d'accueil ou le dashboard
+      window.location.href = "/dashboard"; // Rediriger vers la page d'accueil ou le dashboard
     } else {
       alert("Erreur de connexion : " + res?.error);
     }

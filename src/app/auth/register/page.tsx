@@ -47,7 +47,7 @@ export default function Register() {
           password: formData.password,
         });
         if (res?.ok) {
-          window.location.href = "/";
+          window.location.href = "/dashboard";
         } else {
           // Si l'authentification échoue, rediriger vers login
           window.location.href = "/auth/login";

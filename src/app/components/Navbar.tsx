@@ -13,34 +13,33 @@ export default function Navbar() {
 
   return (
     <nav className="border-b-4 border-black bg-gray-200 p-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">LexiStep</h1>
-        {/* Bouton hamburger visible en mobile */}
-        <button
-          onClick={toggleMenu}
-          className="sm:hidden text-gray-800 focus:outline-none"
+      {/* Conteneur principal qui passe en colonne sur mobile et en ligne sur PC */}
+      <div className="flex flex-col sm:flex-row items-center justify-between">
+        <div className="w-full flex items-center justify-between">
+        <Link href="/">
+          <h1 className="text-2xl font-bold">LexiStep</h1>
+        </Link>
+          {/* Bouton hamburger visible en mobile */}
+          <button
+            onClick={toggleMenu}
+            className="sm:hidden text-gray-800 focus:outline-none"
+          >
+            {isOpen ? <FiX size={24} /> : <FiMenu size={24} />}
+          </button>
+        </div>
+        {/* Liens de navigation : affichage conditionnel et horizontal sur PC */}
+        <div
+          className={`mt-4 sm:mt-0 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 ${
+            isOpen ? "block" : "hidden"
+          } sm:flex`}
         >
-          {isOpen ? <FiX size={24} /> : <FiMenu size={24} />}
-        </button>
-      </div>
-      {/* Menu de navigation */}
-      <div
-        className={`mt-4 flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-4 ${
-          isOpen ? "block" : "hidden"
-        } sm:block`}
-      >
-        <Link href="/" className="btn block">
-          Home
-        </Link>
-        <Link href="/settings" className="btn block">
-          Settings
-        </Link>
-        <Link href="/account" className="btn block">
-          Account
-        </Link>
-        <Link href="/auth/register" className="btn block">
-          Register
-        </Link>
+          <Link href="/dashboard" className="btn block sm:inline-block">
+            Home
+          </Link>
+          <Link href="/settings" className="btn block sm:inline-block">
+            Settings
+          </Link>
+        </div>
       </div>
     </nav>
   );
