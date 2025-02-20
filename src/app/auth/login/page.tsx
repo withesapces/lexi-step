@@ -4,6 +4,7 @@ import { useState } from "react";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { FcGoogle } from "react-icons/fc";
+import { motion } from "framer-motion";
 
 export default function Login() {
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -33,61 +34,128 @@ export default function Login() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen px-4 py-8">
-      <div className="w-full max-w-lg bg-white shadow-md rounded-lg p-8">
-        <h1 className="text-3xl font-bold mb-6 text-center">Connexion</h1>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label htmlFor="email" className="block font-bold mb-1">
-              Email
+    <div className="min-h-screen overflow-hidden bg-yellow-300 flex flex-col items-center justify-center px-4 py-8 relative">
+      <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-20 pointer-events-none" />
+      
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="w-full max-w-lg bg-white border-4 border-black p-8 relative"
+        style={{ boxShadow: "8px 8px 0px #000" }}
+      >
+        <motion.h1 
+          initial={{ y: -20, opacity: 0 }} 
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.2, duration: 0.5 }}
+          className="text-4xl font-black mb-8 text-center transform -rotate-2"
+        >
+          <span className="bg-black text-yellow-300 px-4 py-2 inline-block">
+            CONNECTE TON CERVEAU
+          </span>
+        </motion.h1>
+        
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <motion.div
+            initial={{ x: -20, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ delay: 0.3, duration: 0.5 }}
+          >
+            <label htmlFor="email" className="block font-bold mb-2 text-xl">
+              📧 Email de génie
             </label>
             <input
               type="email"
               id="email"
               name="email"
-              placeholder="Votre email"
+              placeholder="einstein@cerveau.fr"
               value={formData.email}
               onChange={handleChange}
-              className="w-full border border-gray-300 p-2 rounded"
+              className="w-full border-3 border-black p-3 font-bold text-lg focus:bg-yellow-100 focus:outline-none transition-all"
               required
             />
-          </div>
-          <div>
-            <label htmlFor="password" className="block font-bold mb-1">
-              Mot de passe
+          </motion.div>
+          
+          <motion.div
+            initial={{ x: 20, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ delay: 0.4, duration: 0.5 }}
+          >
+            <label htmlFor="password" className="block font-bold mb-2 text-xl">
+              🔒 Code secret
             </label>
             <input
               type="password"
               id="password"
               name="password"
-              placeholder="Votre mot de passe"
+              placeholder="Ton mot de passe ultra-sécurisé"
               value={formData.password}
               onChange={handleChange}
-              className="w-full border border-gray-300 p-2 rounded"
+              className="w-full border-3 border-black p-3 font-bold text-lg focus:bg-yellow-100 focus:outline-none transition-all"
               required
             />
-          </div>
-          <button type="submit" className="btn btn-primary w-full">
-            Se connecter
-          </button>
-        </form>
-        <div className="my-6 text-center">
-          <span className="block mb-2">Ou</span>
-          <button
-            onClick={handleGoogleSignIn}
-            className="btn w-full flex items-center justify-center space-x-2"
+          </motion.div>
+          
+          <motion.button 
+            type="submit" 
+            className="w-full bg-black text-white font-black text-xl py-4 border-4 border-black hover:bg-yellow-300 hover:text-black transition-all transform hover:-translate-y-1 hover:rotate-1"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.5, duration: 0.5 }}
           >
-            <FcGoogle size={20} />
-            <span>Se connecter avec Google</span>
-          </button>
-        </div>
-        <p className="text-center">
-          Pas encore inscrit ?{" "}
-          <Link href="/auth/register" className="text-blue-600 underline">
-            S'inscrire
+            ACTIVER TON CERVEAU →
+          </motion.button>
+        </form>
+        
+        <motion.div 
+          className="my-8"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.6, duration: 0.5 }}
+        >
+          <div className="relative flex items-center justify-center">
+            <div className="flex-grow border-t-4 border-black"></div>
+            <span className="mx-4 px-4 font-black text-lg bg-pink-400 transform rotate-2 inline-block">OU ALORS</span>
+            <div className="flex-grow border-t-4 border-black"></div>
+          </div>
+          
+          <motion.button
+            onClick={handleGoogleSignIn}
+            className="mt-6 w-full bg-white text-black font-bold text-lg py-3 border-4 border-black hover:bg-blue-400 transition-all flex items-center justify-center space-x-3"
+            whileHover={{ scale: 1.02, rotate: -1 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            <FcGoogle size={24} />
+            <span className="font-black">CONNEXION AVEC GOOGLE</span>
+          </motion.button>
+        </motion.div>
+        
+        <motion.p 
+          className="text-center font-bold text-lg mt-6"
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.7, duration: 0.5 }}
+        >
+          Pas encore de super-cerveau ?{" "}
+          <Link 
+            href="/auth/register" 
+            className="bg-green-400 px-2 py-1 font-black hover:bg-black hover:text-white transition-all transform inline-block hover:rotate-1"
+          >
+            INSCRIS-TOI ICI !
           </Link>
-        </p>
-      </div>
+        </motion.p>
+        
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.8, duration: 0.5 }}
+          className="mt-8 text-center bg-yellow-300 border-2 border-black p-3 transform -rotate-1"
+        >
+          <p className="font-bold">🧠 Connecte-toi pour débloquer +43% de mémoire</p>
+        </motion.div>
+      </motion.div>
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { FcGoogle } from "react-icons/fc";
 import { signIn } from "next-auth/react";
+import { motion } from "framer-motion";
 
 export default function Register() {
   const [formData, setFormData] = useState({
@@ -62,107 +63,171 @@ export default function Register() {
     }
   };
 
-
-
   const handleGoogleSignIn = () => {
     // Placeholder pour la connexion avec Google
     console.log("Connexion avec Google");
+    signIn("google", { callbackUrl: "/dashboard" });
+  };
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: { duration: 0.5 }
+    }
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen px-4 py-8">
-      {/* Container responsive */}
-      <div className="w-full max-w-lg bg-white shadow-md rounded-lg p-8">
-        <h1 className="text-3xl font-bold mb-6 text-center">Inscription</h1>
+    <div className="min-h-screen overflow-hidden bg-yellow-300 flex flex-col items-center justify-center px-4 py-8 relative">
+      <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-20 pointer-events-none" />
+      
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="w-full max-w-xl bg-white border-4 border-black p-8 relative"
+        style={{ boxShadow: "10px 10px 0px #000" }}
+      >
+        <motion.h1 
+          variants={itemVariants}
+          className="text-4xl font-black mb-10 text-center transform -rotate-2"
+        >
+          <span className="bg-black text-yellow-300 px-6 py-3 inline-block">
+            REJOINS LES GÉNIES
+          </span>
+        </motion.h1>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label htmlFor="name" className="block font-bold mb-1">
-              Nom
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <motion.div variants={itemVariants}>
+            <label htmlFor="name" className="block font-black text-xl mb-2">
+              🧠 Nom de super-génie
             </label>
             <input
               type="text"
               id="name"
               name="name"
-              placeholder="Votre nom"
+              placeholder="Newton, Einstein, Toi..."
               value={formData.name}
               onChange={handleChange}
-              className="w-full border border-gray-300 p-2 rounded"
+              className="w-full border-3 border-black p-3 text-lg font-bold focus:bg-pink-100 focus:outline-none transition-all transform hover:rotate-0"
               required
             />
-          </div>
+          </motion.div>
 
-          <div>
-            <label htmlFor="email" className="block font-bold mb-1">
-              Email
+          <motion.div variants={itemVariants}>
+            <label htmlFor="email" className="block font-black text-xl mb-2">
+              📧 Email de cerveau supérieur
             </label>
             <input
               type="email"
               id="email"
               name="email"
-              placeholder="Votre email"
+              placeholder="ton.genie@neurones.fr"
               value={formData.email}
               onChange={handleChange}
-              className="w-full border border-gray-300 p-2 rounded"
+              className="w-full border-3 border-black p-3 text-lg font-bold focus:bg-blue-100 focus:outline-none transition-all"
               required
             />
-          </div>
+          </motion.div>
 
-          <div>
-            <label htmlFor="password" className="block font-bold mb-1">
-              Mot de passe
+          <motion.div variants={itemVariants}>
+            <label htmlFor="password" className="block font-black text-xl mb-2">
+              🔒 Code secret ultra-puissant
             </label>
             <input
               type="password"
               id="password"
               name="password"
-              placeholder="Votre mot de passe"
+              placeholder="Minimum 8 caractères géniaux"
               value={formData.password}
               onChange={handleChange}
-              className="w-full border border-gray-300 p-2 rounded"
+              className="w-full border-3 border-black p-3 text-lg font-bold focus:bg-green-100 focus:outline-none transition-all"
               required
             />
-          </div>
+          </motion.div>
 
-          <div>
-            <label htmlFor="confirmPassword" className="block font-bold mb-1">
-              Confirmer le mot de passe
+          <motion.div variants={itemVariants}>
+            <label htmlFor="confirmPassword" className="block font-black text-xl mb-2">
+              🔄 Confirme ton génie
             </label>
             <input
               type="password"
               id="confirmPassword"
               name="confirmPassword"
-              placeholder="Confirmez votre mot de passe"
+              placeholder="Même code, même génie"
               value={formData.confirmPassword}
               onChange={handleChange}
-              className="w-full border border-gray-300 p-2 rounded"
+              className="w-full border-3 border-black p-3 text-lg font-bold focus:bg-yellow-100 focus:outline-none transition-all"
               required
             />
-          </div>
+          </motion.div>
 
-          <button type="submit" className="btn btn-primary w-full">
-            S'inscrire
-          </button>
+          <motion.button 
+            variants={itemVariants}
+            type="submit" 
+            className="w-full bg-black text-white font-black text-xl py-4 mt-6 border-4 border-black hover:bg-yellow-400 hover:text-black transition-all transform hover:-translate-y-1"
+            whileHover={{ scale: 1.03, rotate: 1 }}
+            whileTap={{ scale: 0.97 }}
+          >
+            ACTIVER TON SUPER-CERVEAU 🚀
+          </motion.button>
         </form>
 
-        <div className="my-6 text-center">
-          <span className="block mb-2">Ou</span>
-          <button
+        <motion.div 
+          variants={itemVariants}
+          className="mt-8 mb-6"
+        >
+          <div className="relative flex items-center justify-center">
+            <div className="flex-grow border-t-4 border-black"></div>
+            <span className="mx-4 px-4 py-1 font-black text-lg bg-blue-400 transform rotate-1 inline-block">
+              OPTION RAPIDE
+            </span>
+            <div className="flex-grow border-t-4 border-black"></div>
+          </div>
+          
+          <motion.button
+            variants={itemVariants}
             onClick={handleGoogleSignIn}
-            className="btn w-full flex items-center justify-center space-x-2"
+            className="mt-6 w-full bg-white text-black font-black text-lg py-3 border-4 border-black hover:bg-pink-400 transition-all flex items-center justify-center space-x-3"
+            whileHover={{ scale: 1.02, rotate: -1 }}
+            whileTap={{ scale: 0.98 }}
           >
-            <FcGoogle size={20} />
-            <span>Se connecter avec Google</span>
-          </button>
-        </div>
+            <FcGoogle size={24} />
+            <span>GÉNIE EXPRESS AVEC GOOGLE</span>
+          </motion.button>
+        </motion.div>
 
-        <p className="text-center">
-          Déjà inscrit ?{" "}
-          <Link href="/auth/login" className="text-blue-600 underline">
-            Se connecter
+        <motion.div
+          variants={itemVariants}
+          className="text-center bg-green-400 border-2 border-black p-4 transform -rotate-1 mb-6"
+        >
+          <p className="font-black text-lg">⚡️ +38% de productivité garantie ou remboursé</p>
+        </motion.div>
+
+        <motion.p 
+          variants={itemVariants}
+          className="text-center font-bold text-lg"
+        >
+          Déjà un cerveau supérieur ?{" "}
+          <Link 
+            href="/auth/login" 
+            className="bg-yellow-300 px-3 py-1 font-black hover:bg-black hover:text-white transition-all transform inline-block hover:rotate-1"
+          >
+            CONNECTE-TOI ICI !
           </Link>
-        </p>
-      </div>
+        </motion.p>
+      </motion.div>
     </div>
   );
 }
