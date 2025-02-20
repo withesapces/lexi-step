@@ -13,6 +13,8 @@ export default function GameModePage() {
   const [activeMode, setActiveMode] = useState<string | null>(null);
   const [streakDays, setStreakDays] = useState<number>(0);
   const [dailyGoal, setDailyGoal] = useState<number>(200);
+  const [timeOfDay, setTimeOfDay] = useState<string>("");
+  const [season, setSeason] = useState<string>("");
 
   // Game modes data
   const gameModes: GameMode[] = [
@@ -41,16 +43,18 @@ export default function GameModePage() {
       bgColor: "bg-blue-400",
       redirectUrl: "/dashboard/game/prompt-writing",
       emoji: "🧠",
-      prompts: ["Si tu pouvais voyager dans le temps...", "Imagine une technologie du futur..."]
-    },
+      prompts: ["Si tu pouvais voyager dans le temps...", "Imagine une technologie du futur..."],
+      isUnderConstruction: true
+    },    
     {
-      id: "collaborative-writing",
-      title: "ÉCRITURE COLLABORATIVE",
-      description: "Augmente ton QI en co-créant avec d'autres génies en devenir!",
-      bgColor: "bg-purple-400",
-      redirectUrl: "/dashboard/game/collaborative-writing",
-      emoji: "👥",
-      prompts: ["18 auteurs en ligne maintenant!", "3 histoires qui attendent ta contribution"]
+      id: "beat-the-clock",
+      title: "BEAT THE CLOCK",
+      description: "Affronte le chrono et prouve ta rapidité dans ce défi d'écriture ultra-rapide !",
+      bgColor: "bg-red-500",
+      redirectUrl: "/dashboard/game/beat-the-clock",
+      emoji: "⚡️",
+      prompts: ["Écris 300 mots en 10 minutes ou le monde explose!"],
+      isUnderConstruction: true
     },
   ];
 
@@ -99,10 +103,10 @@ export default function GameModePage() {
     fetchUserStats();
 
     // Get the last used mode from localStorage
-    const lastMode = localStorage.getItem("lastGameMode");
-    if (lastMode) {
-      setActiveMode(lastMode);
-    }
+    // const lastMode = localStorage.getItem("lastGameMode");
+    // if (lastMode) {
+    //   setActiveMode(lastMode);
+    // }
   }, []);
 
   // Handler for mode selection

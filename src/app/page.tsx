@@ -129,7 +129,7 @@ export default function Home() {
                 ILS SONT DEVENUS DES GÉNIES
               </span>
             </h2>
-            <div className="grid md:grid-cols-2 gap-8">
+            <div className="grid md:grid-cols-2 gap-8 mb-8 ">
               <motion.div
                 whileHover={{ scale: 1.02, rotate: -1 }}
                 className="p-6 bg-white text-black border-4 border-yellow-300"
@@ -151,6 +151,30 @@ export default function Home() {
                   Mon patron pense que je prends des substances illégales."
                 </p>
                 <p className="mt-4 font-black">- Thomas R, Entrepreneur</p>
+              </motion.div>
+            </div>
+            <div className="grid md:grid-cols-2 gap-8">
+              <motion.div
+                whileHover={{ scale: 1.02, rotate: -1 }}
+                className="p-6 bg-white text-black border-4 border-yellow-300"
+              >
+                <div className="text-3xl mb-4">🤯 Clarté mentale</div>
+                <p className="text-xl font-bold">
+              "Après 21 jours, j'ai réalisé que mon travail était toxique. 
+              J'ai démissionné. Maintenant je vis dans une yourte et je suis heureuse."
+            </p>
+            <p className="mt-4 font-black">- Camille B, Ex-consultante</p>
+              </motion.div>
+              <motion.div
+                whileHover={{ scale: 1.02, rotate: 1 }}
+                className="p-6 bg-white text-black border-4 border-yellow-300"
+              >
+           <div className="text-3xl mb-4">💰 Économies réalisées</div>
+            <p className="text-xl font-bold">
+              "Écrire mes pulsions d'achat avant de valider mon panier m'a fait économiser 3420€ en deux mois. 
+              Amazon me déteste !"
+            </p>
+            <p className="mt-4 font-black">- Julie F, Raisonnable</p>
               </motion.div>
             </div>
           </motion.div>
