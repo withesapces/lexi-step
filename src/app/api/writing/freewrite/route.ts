@@ -69,10 +69,10 @@ export async function POST(req: NextRequest) {
     
     // Récupérer les données du corps de la requête
     const data = await req.json();
-    const { title, content, wordCount, exerciseType, creativityLevel } = data;
+    const { title, content, wordCount, exerciseType, userMood } = data;
     
     // Validation des données
-    if (!content || !wordCount || !creativityLevel) {
+    if (!content || !wordCount) {
       return NextResponse.json(
         { error: "Données incomplètes" },
         { status: 400 }
@@ -101,6 +101,7 @@ export async function POST(req: NextRequest) {
           content,
           wordCount,
           exerciseType: "ECRITURE_LIBRE",
+          userMood,
         },
       });
       
@@ -108,7 +109,6 @@ export async function POST(req: NextRequest) {
       const freeWritingEntry = await tx.freeWritingEntry.create({
         data: {
           entryId: writingEntry.id,
-          creativityLevel,
         },
       });
       

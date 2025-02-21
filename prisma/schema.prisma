@@ -114,17 +114,18 @@ model WritingEntry {
   exerciseType ExerciseType
   title        String?
   content      String       @db.Text
+  userMood     String?      // Stocker l'humeur de l'utilisateur
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
-
-  // Relations avec les modèles spécifiques à chaque exercice
+  
+  // Relations avec les modèles spécifiques
   journalEntry       JournalEntry?
   freeWritingEntry   FreeWritingEntry?
   promptWritingEntry PromptWritingEntry?
-
-  // Relation avec l'utilisateur
+  
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
+
 
 // Types d'exercices disponibles
 enum ExerciseType {
@@ -150,7 +151,6 @@ model JournalEntry {
 model FreeWritingEntry {
   id              String          @id @default(uuid())
   entryId         String          @unique
-  creativityLevel CreativityLevel // Niveau de créativité choisi
   createdAt       DateTime        @default(now())
 
   // Relation avec l'entrée principale

@@ -1,11 +1,11 @@
 // /lib/streakUtils.ts
-import { PrismaClient } from "@prisma/client";
+import type { Prisma } from "@prisma/client";
 import { startOfDay, differenceInDays } from "date-fns";
 
 /**
  * Récupère les données de streak d'un utilisateur
  */
-export async function getStreakData(prisma: PrismaClient, userId: string) {
+export async function getStreakData(prisma: Prisma.TransactionClient, userId: string) {
   // Récupérer la streak de l'utilisateur ou en créer une nouvelle si elle n'existe pas
   let streak = await prisma.writingStreak.findUnique({
     where: { userId },
@@ -27,7 +27,7 @@ export async function getStreakData(prisma: PrismaClient, userId: string) {
 /**
  * Met à jour la streak d'un utilisateur après une nouvelle entrée d'écriture
  */
-export async function updateUserStreak(prisma: PrismaClient, userId: string) {
+export async function updateUserStreak(prisma: Prisma.TransactionClient, userId: string) {
   // Récupérer la streak actuelle
   const streak = await getStreakData(prisma, userId);
   const today = startOfDay(new Date());
@@ -83,7 +83,7 @@ export async function updateUserStreak(prisma: PrismaClient, userId: string) {
 /**
  * Vérifie si l'utilisateur a débloqué des badges liés à sa streak
  */
-async function checkStreakBadges(prisma: PrismaClient, userId: string, currentStreak: number) {
+async function checkStreakBadges(prisma: Prisma.TransactionClient, userId: string, currentStreak: number) {
   // Récupérer tous les badges de type "streak"
   const streakBadges = await prisma.badge.findMany({
     where: {

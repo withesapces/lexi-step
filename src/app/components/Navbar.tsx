@@ -3,7 +3,9 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { FiMenu, FiX, FiEye, FiTrendingUp, FiSettings } from "react-icons/fi";
+import { FiMenu, FiX, FiEye, FiTrendingUp } from "react-icons/fi";
+import { IoMdBook } from "react-icons/io";
+import { FaRegUser } from "react-icons/fa";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -100,6 +102,19 @@ export default function Navbar() {
                 </motion.div>
               </Link>
             </motion.div>
+
+            <motion.div variants={itemVariants}>
+              <Link href="/library">
+                <motion.div
+                  className="font-black bg-green-400 text-black px-4 py-2 border-3 border-black flex items-center space-x-2 transform hover:rotate-2"
+                  whileHover={{ scale: 1.05, y: -3 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <IoMdBook className="text-xl" />
+                  <span>MES TEXTES</span>
+                </motion.div>
+              </Link>
+            </motion.div>
             
             <motion.div variants={itemVariants}>
               <Link href="/settings">
@@ -108,21 +123,12 @@ export default function Navbar() {
                   whileHover={{ scale: 1.05, y: -3 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  <FiSettings className="text-xl" />
-                  <span>RÉGLAGES</span>
+                  <FaRegUser className="text-xl" />
+                  <span>PROFIL</span>
                 </motion.div>
               </Link>
             </motion.div>
             
-            <motion.div variants={itemVariants}>
-              <motion.button
-                className="font-black bg-white text-black px-4 py-2 border-3 border-black transform hover:rotate-1 w-full sm:w-auto"
-                whileHover={{ scale: 1.05, y: -3, backgroundColor: "#000", color: "#fff" }}
-                whileTap={{ scale: 0.95 }}
-              >
-                ÉCRIRE MAINTENANT 🔥
-              </motion.button>
-            </motion.div>
           </motion.div>
         </div>
       </div>

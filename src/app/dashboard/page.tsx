@@ -19,22 +19,23 @@ export default function GameModePage() {
   // Game modes data
   const gameModes: GameMode[] = [
     {
+      id: "free-writing",
+      title: "MODE ZEN",
+      description: "Libère ton cerveau et booste ta créativité sans limites!",
+      bgColor: "bg-yellow-300",
+      redirectUrl: "/dashboard/game/free-writing",
+      emoji: "✨",
+      prompts: ["Écris sans t'arrêter pendant 5 minutes", "Laisse couler tes pensées..."]
+    },
+    {
       id: "journal-intime",
       title: "JOURNAL INTIME",
       description: "Écris tes émotions et réduis ton stress de 42% en 21 jours!",
       bgColor: "bg-pink-400",
       redirectUrl: "/dashboard/game/journal-intime",
       emoji: "📓",
-      prompts: ["Comment te sens-tu aujourd'hui?", "Qu'est-ce qui t'a marqué cette semaine?"]
-    },
-    {
-      id: "free-writing",
-      title: "ÉCRITURE LIBRE",
-      description: "Libère ton cerveau et booste ta créativité sans limites!",
-      bgColor: "bg-yellow-300",
-      redirectUrl: "/dashboard/game/free-writing",
-      emoji: "✨",
-      prompts: ["Écris sans t'arrêter pendant 5 minutes", "Laisse couler tes pensées..."]
+      prompts: ["Comment te sens-tu aujourd'hui?", "Qu'est-ce qui t'a marqué cette semaine?"],
+      isUnderConstruction: true
     },
     {
       id: "prompt-writing",

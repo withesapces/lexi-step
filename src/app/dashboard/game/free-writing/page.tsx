@@ -1,61 +1,71 @@
+// /app/dashboard/game/free-write/page.tsx
 "use client";
 
-import { useState, useEffect } from "react";
+import { useRef, useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import Navbar from "../../../components/Navbar";
 import { useSession } from "next-auth/react";
 import { toast } from "react-hot-toast";
+import MoodSelector from '../../../components/MoodSelector';
 
 interface FreeWriteEntry {
   id?: string;
   date: string;
-  creativityLevel: string;
   preview: string;
   wordCount?: number;
 }
 
-// Fonction pour mapper le niveau de créativité à l'enum Prisma
-const mapCreativityLevelToEnum = (emoji: string): string => {
-  const emojiMap: Record<string, string> = {
-    "🧠": "DEBUTANT",
-    "✨": "INTERMEDIAIRE",
-    "🎨": "AVANCE",
-    "💡": "INTERMEDIAIRE",
-    "🚀": "AVANCE"
-  };
-  
-  return emojiMap[emoji] || "INTERMEDIAIRE";
-};
-
 export default function FreeWriteGame() {
+  const [isMoodSelectorOpen, setIsMoodSelectorOpen] = useState(false);
+  const [selectedMood, setSelectedMood] = useState(null);
   const { data: session, status } = useSession();
   const [text, setText] = useState("");
   const [wordCount, setWordCount] = useState(0);
   const [isExpanded, setIsExpanded] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [creativityLevel, setCreativityLevel] = useState("");
   const [freeWriteEntries, setFreeWriteEntries] = useState<FreeWriteEntry[]>([]);
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [dailyWordGoal, setDailyWordGoal] = useState(200);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [shake, setShake] = useState(false);
+
+  const shakeVariants = {
+    initial: { x: 0 },
+    shake: {
+      x: [0, -50, 50, -50, 50, 0],
+      transition: { duration: 0.6 }
+    }
+  };
+  
 
   const today = format(new Date(), "EEEE d MMMM yyyy", { locale: fr });
 
-  const creativityLevels = [
-    { emoji: "🧠", name: "Génie en herbe", color: "bg-blue-400" },
-    { emoji: "✨", name: "Étincelle créative", color: "bg-yellow-300" },
-    { emoji: "🎨", name: "Artiste confirmé", color: "bg-indigo-300" },
-    { emoji: "💡", name: "Idée lumineuse", color: "bg-green-400" },
-    { emoji: "🚀", name: "Voyageur de l'imagination", color: "bg-purple-400" }
-  ];
+  // Récupérer les réglages de l'utilisateur
+  useEffect(() => {
+    const fetchSettings = async () => {
+      if (status !== "authenticated" || !session?.user?.email) return;
+      try {
+        const response = await fetch('/api/user/settings'); // Endpoint à adapter selon votre backend
+        if (!response.ok) throw new Error('Erreur lors de la récupération des réglages');
+        const data = await response.json();
+        setDailyWordGoal(data.dailyWordGoal);
+      } catch (error) {
+        console.error("Erreur settings:", error);
+      }
+    };
+    fetchSettings();
+  }, [session, status]);
 
+  // Calcul du nombre de mots et de la progression en fonction du dailyWordGoal
   useEffect(() => {
     const count = text.trim().split(/\s+/).filter(word => word.length > 0).length;
     setWordCount(count);
-    setProgress(Math.min((count / 1000) * 100, 100));
-  }, [text]);
+    setProgress(Math.min((count / dailyWordGoal) * 100, 100));
+  }, [text, dailyWordGoal]);
 
   // Récupération des entrées précédentes depuis la base de données
   useEffect(() => {
@@ -75,7 +85,6 @@ export default function FreeWriteGame() {
         const formattedEntries = data.entries.map((entry: any) => ({
           id: entry.id,
           date: format(new Date(entry.writingEntry.createdAt), "d MMMM", { locale: fr }),
-          creativityLevel: getEmojiFromLevel(entry.creativityLevel),
           preview: entry.writingEntry.content.substring(0, 50) + "...",
           wordCount: entry.writingEntry.wordCount
         }));
@@ -92,50 +101,49 @@ export default function FreeWriteGame() {
     fetchEntries();
   }, [session, status]);
 
-  // Fonction pour convertir le niveau de créativité de l'enum en emoji
-  const getEmojiFromLevel = (level: string): string => {
-    const levelMap: Record<string, string> = {
-      "DEBUTANT": "🧠",
-      "INTERMEDIAIRE": "✨",
-      "AVANCE": "🚀"
-    };
-    
-    return levelMap[level] || "✨";
-  };
-
   const handleSave = async () => {
+    // Si aucun texte n'est présent, focussez le textarea et déclenchez le shake
+    if (text.trim().length === 0) {
+      if (textareaRef.current) {
+        textareaRef.current.focus();
+      }
+      setShake(true);
+      // Réinitialisez l'animation après 600ms (durée de l'animation)
+      setTimeout(() => setShake(false), 600);
+      return;
+    }
+    
     if (status !== "authenticated") {
       toast.error("Tu dois être connecté pour sauvegarder ton chef-d'œuvre!");
       return;
     }
     
-    if (creativityLevel === "") {
-      toast.error("Choisis ton niveau de créativité avant de sauver ton chef-d'œuvre!");
+    if (wordCount <= 10) {
+      toast.error("Ton chef-d'œuvre semble un peu vide... Écris quelque chose. Au moins 200 mots !");
       return;
     }
     
-    if (wordCount === 0) {
-      toast.error("Ton chef-d'œuvre semble un peu vide... Écris quelque chose!");
-      return;
-    }
-    
+    // Ouvrir le sélecteur d'humeur avant de sauvegarder
+    setIsMoodSelectorOpen(true);
+  };
+  
+  
+  // Nouvelle fonction pour gérer la sauvegarde après la sélection de l'humeur
+  const handleSaveWithMood = async (mood: { value: any; }) => {
     try {
       setIsSaving(true);
       
-      // Création du titre à partir des premiers mots
       const words = text.trim().split(/\s+/).filter(word => word.length > 0);
       const title = words.slice(0, 5).join(" ") + "...";
       
-      // Préparation des données à envoyer
       const entryData = {
         wordCount,
         title,
         content: text,
         exerciseType: "ECRITURE_LIBRE",
-        creativityLevel: mapCreativityLevelToEnum(creativityLevel)
+        userMood: mood.value // Ajout de l'humeur
       };
       
-      // Envoi des données à l'API
       const response = await fetch('/api/writing/freewrite', {
         method: 'POST',
         headers: {
@@ -150,23 +158,16 @@ export default function FreeWriteGame() {
       
       const result = await response.json();
       
-      // Ajout de la nouvelle entrée à la liste des entrées affichées
-      const newEntry: FreeWriteEntry = {
+      const newEntry = {
         id: result.id,
         date: format(new Date(), "d MMMM", { locale: fr }),
-        creativityLevel,
         preview: text.substring(0, 50) + "...",
         wordCount
       };
       
       setFreeWriteEntries([newEntry, ...freeWriteEntries]);
-      
-      // Mise à jour de l'état
-      toast.success("👏 MAGNIFIQUE! Ta création est sauvegardée. Ton quotient de créativité vient de grimper de 20%!");
-      
-      // Réinitialisation du formulaire
+      toast.success("👏 MAGNIFIQUE! Ta création est sauvegardée.");
       setText("");
-      setCreativityLevel("");
       
     } catch (error) {
       console.error('Erreur:', error);
@@ -174,10 +175,6 @@ export default function FreeWriteGame() {
     } finally {
       setIsSaving(false);
     }
-  };
-
-  const selectCreativityLevel = (selectedLevel: string) => {
-    setCreativityLevel(selectedLevel);
   };
 
   const containerVariants = {
@@ -208,10 +205,10 @@ export default function FreeWriteGame() {
             className="text-5xl font-black mb-2 text-center transform -rotate-2"
             style={{ textShadow: darkMode ? "3px 3px 0px #4ADE80" : "3px 3px 0px #000" }}
           >
-            ÉCRITURE LIBRE
+            MODE ZEN
             <br />
             <span className={`text-3xl ${darkMode ? "bg-teal-600" : "bg-black"} ${darkMode ? "text-white" : "text-teal-400"} px-4 py-2 inline-block rotate-2`}>
-              Libère ton cerveau et booste ta créativité sans limites!
+              Libère ton cerveau sans limites!
             </span>
           </motion.div>
           
@@ -227,36 +224,6 @@ export default function FreeWriteGame() {
 
         {/* Main Content */}
         <div className="max-w-4xl mx-auto px-4 py-4">
-          {/* Creativity Level Selection */}
-          <motion.div
-            className="mb-4"
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <div className="text-center mb-2">
-              <motion.h3 
-                className={`inline-block ${darkMode ? "bg-teal-600" : "bg-black"} ${darkMode ? "text-white" : "text-teal-400"} px-4 py-2 font-bold transform rotate-2`}
-              >
-                Quel niveau de créativité dégages-tu aujourd'hui?
-              </motion.h3>
-            </div>
-            
-            <div className="flex flex-wrap gap-3 justify-center mb-4">
-              {creativityLevels.map((level, index) => (
-                <motion.button
-                  key={index}
-                  onClick={() => selectCreativityLevel(level.emoji)}
-                  className={`${darkMode ? "bg-teal-600 hover:bg-teal-500" : "bg-black hover:bg-gray-800"} text-white px-4 py-2 font-bold transform ${Math.random() > 0.5 ? "rotate-2" : "-rotate-2"} border-2 ${darkMode ? "border-teal-600" : "border-black"} ${creativityLevel === level.emoji ? 'ring-4 ring-white' : ''}`}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  {level.emoji} {level.name}
-                </motion.button>
-              ))}
-            </div>
-          </motion.div>
-
           {/* Writing Section */}
           <motion.div
             className="mb-6"
@@ -266,19 +233,23 @@ export default function FreeWriteGame() {
           >
             <div className="flex justify-between items-center mb-2">
               <span className={`font-bold ${darkMode ? "text-teal-300" : "text-black"}`}>
-                MON ÉCRIN CRÉATIF {creativityLevel && <span className="text-2xl ml-2">{creativityLevel}</span>}
+                MON ÉCRIN
               </span>
               <span className={`text-sm font-bold ${darkMode ? "text-gray-400" : "text-gray-700"}`}>
-                MOTS: {wordCount}/1000
+                MOTS: {wordCount}/{dailyWordGoal}
               </span>
             </div>
             
-            <textarea
-              placeholder="Lâche tout ce que ton cerveau invente ici... Chaque mot te rapproche de l'illumination créative!"
-              value={text}
-              onChange={(e) => setText(e.target.value)}
-              className={`w-full p-6 rounded-none text-lg border-4 ${darkMode ? "border-teal-600 bg-gray-800 text-white" : "border-black bg-white text-black"} ${isExpanded ? "h-96" : "h-64"} transition-all`}
-            ></textarea>
+            <motion.textarea
+  ref={textareaRef}
+  placeholder="Lâche tout ce que ton cerveau invente ici..."
+  value={text}
+  onChange={(e) => setText(e.target.value)}
+  variants={shakeVariants}
+  animate={shake ? "shake" : "initial"}
+  className={`w-full p-6 rounded-none text-lg border-4 ${darkMode ? "border-teal-600 bg-gray-800 text-white" : "border-black bg-white text-black"} ${isExpanded ? "h-96" : "h-64"} transition-all`}
+/>
+
             
             <div className="flex justify-between mt-2">
               <button 
@@ -289,7 +260,9 @@ export default function FreeWriteGame() {
               </button>
               
               <span className={`text-sm ${darkMode ? "text-teal-300" : "text-gray-700"} font-bold`}>
-                {wordCount >= 1000 ? "👑 Tu es roi/reine de la créativité!" : `Encore ${1000 - wordCount} mots pour ton chef-d'œuvre`}
+                {wordCount >= dailyWordGoal
+                  ? "👑 Tu es roi/reine de l'écriture!"
+                  : `Encore ${dailyWordGoal - wordCount} mots pour ton chef-d'œuvre`}
               </span>
             </div>
           </motion.div>
@@ -310,7 +283,7 @@ export default function FreeWriteGame() {
               >
                 {progress >= 30 && (
                   <div className="text-center text-white font-bold text-sm py-0.5">
-                    {Math.round(progress)}% DE CRÉATIVITÉ LIBÉRÉE
+                    {Math.round(progress)}% DE LIBÉRATION
                   </div>
                 )}
               </motion.div>
@@ -329,7 +302,7 @@ export default function FreeWriteGame() {
               className={`${darkMode ? "bg-teal-600 hover:bg-teal-500" : "bg-black hover:bg-teal-500 hover:text-white"} ${darkMode ? "text-white" : "text-teal-400"} px-8 py-4 text-xl font-black border-4 ${darkMode ? "border-teal-600 hover:border-teal-500" : "border-black"} transition-all relative`}
               whileHover={{ scale: 1.05, rotate: -2 }}
               whileTap={{ scale: 0.95 }}
-              disabled={wordCount === 0 || isSaving}
+              disabled={isSaving}
             >
               {isSaving ? (
                 <span className="flex items-center">
@@ -378,7 +351,6 @@ export default function FreeWriteGame() {
                   >
                     <div className="flex justify-between items-center mb-2">
                       <span className="font-bold">{entry.date}</span>
-                      <span className="text-2xl">{entry.creativityLevel}</span>
                     </div>
                     <p className={`text-sm ${darkMode ? "text-gray-300" : "text-gray-700"}`}>
                       {entry.preview}
@@ -409,6 +381,12 @@ export default function FreeWriteGame() {
             </motion.button>
           </div>
         </div>
+        <MoodSelector
+  isOpen={isMoodSelectorOpen}
+  onClose={() => setIsMoodSelectorOpen(false)}
+  onSelect={handleSaveWithMood}
+  darkMode={darkMode}
+/>
       </div>
     </>
   );
