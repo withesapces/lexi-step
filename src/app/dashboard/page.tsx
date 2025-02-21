@@ -1,4 +1,3 @@
-// src/app/dashboard/page.tsx
 
 "use client";
 
@@ -15,8 +14,6 @@ export default function GameModePage() {
   const [activeMode, setActiveMode] = useState<string | null>(null);
   const [streakDays, setStreakDays] = useState<number>(0);
   const [dailyGoal, setDailyGoal] = useState<number>(200);
-  const [timeOfDay, setTimeOfDay] = useState<string>("");
-  const [season, setSeason] = useState<string>("");
 
   // Game modes data
   const gameModes: GameMode[] = [

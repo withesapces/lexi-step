@@ -35,6 +35,19 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 
+## TODO 
+
+
+Faire les badges (une fois qu'on a gagné un badge, on ne doit pas pouvoir le perdre)
+Quand on change un objectif quotidien, il doit être effectif que demain
+Le streak ne doit pas être pris en compte si l'utilisateur n'a pas atteint son quota journalier (au moment de l'enregistrement d'un writing)
+Changer la couleur dans le menu de mes textes
+Avant le lancement il doit y avoir le mode prompt comme jeu
+Quand on supprime un article, ça ne doit pas supprimer le nombre de mots totaux
+L'utilisateur doit avoir un nom de profil qui doit être unique et pas un nom et prénom
+Si un utilisateur perds une streak un jour, il peut la retrouver en regardant une pub. Si c'est 2x d'affiliée, il ne peut pas et c'est perdu. 
+Trouver ce qui sera payant et non payant
+
 - LEXISTEP
   - lib
     - prisma.ts

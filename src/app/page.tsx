@@ -88,7 +88,7 @@ export default function Home() {
               >
                 <h3 className="text-2xl font-black mb-4">🔥 NEUROPLASTICITÉ</h3>
                 <p className="font-bold">
-                  L'écriture active 7 zones de ton cerveau simultanément. 
+                  L'écriture active 7 zones de ton cerveau simultanément.
                   C'est comme un CrossFit cérébral quotidien.
                 </p>
               </motion.div>
@@ -136,7 +136,7 @@ export default function Home() {
               >
                 <div className="text-3xl mb-4">🧠 +43% de mémoire</div>
                 <p className="text-xl font-bold">
-                  "J'ai commencé à me souvenir des anniversaires de TOUTE ma famille. 
+                  "J'ai commencé à me souvenir des anniversaires de TOUTE ma famille.
                   Même de mon beau-frère que je déteste !"
                 </p>
                 <p className="mt-4 font-black">- Marie K, Développeuse</p>
@@ -147,7 +147,7 @@ export default function Home() {
               >
                 <div className="text-3xl mb-4">💪 +38% de productivité</div>
                 <p className="text-xl font-bold">
-                  "Je finis mes journées de travail à 15h maintenant. 
+                  "Je finis mes journées de travail à 15h maintenant.
                   Mon patron pense que je prends des substances illégales."
                 </p>
                 <p className="mt-4 font-black">- Thomas R, Entrepreneur</p>
@@ -160,21 +160,21 @@ export default function Home() {
               >
                 <div className="text-3xl mb-4">🤯 Clarté mentale</div>
                 <p className="text-xl font-bold">
-              "Après 21 jours, j'ai réalisé que mon travail était toxique. 
-              J'ai démissionné. Maintenant je vis dans une yourte et je suis heureuse."
-            </p>
-            <p className="mt-4 font-black">- Camille B, Ex-consultante</p>
+                  "Après 21 jours, j'ai réalisé que mon travail était toxique.
+                  J'ai démissionné. Maintenant je vis dans une yourte et je suis heureuse."
+                </p>
+                <p className="mt-4 font-black">- Camille B, Ex-consultante</p>
               </motion.div>
               <motion.div
                 whileHover={{ scale: 1.02, rotate: 1 }}
                 className="p-6 bg-white text-black border-4 border-yellow-300"
               >
-           <div className="text-3xl mb-4">💰 Économies réalisées</div>
-            <p className="text-xl font-bold">
-              "Écrire mes pulsions d'achat avant de valider mon panier m'a fait économiser 3420€ en deux mois. 
-              Amazon me déteste !"
-            </p>
-            <p className="mt-4 font-black">- Julie F, Raisonnable</p>
+                <div className="text-3xl mb-4">💰 Économies réalisées</div>
+                <p className="text-xl font-bold">
+                  "Écrire mes pulsions d'achat avant de valider mon panier m'a fait économiser 3420€ en deux mois.
+                  Amazon me déteste !"
+                </p>
+                <p className="mt-4 font-black">- Julie F, Raisonnable</p>
               </motion.div>
             </div>
           </motion.div>
@@ -199,11 +199,13 @@ export default function Home() {
                 className="p-6 bg-white border-4 border-black text-center relative overflow-hidden"
               >
                 <div className="text-2xl font-black mb-4">CERVEAU BASIQUE</div>
-                <div className="text-5xl font-black mb-6">9€/mois</div>
+                <div className="text-5xl font-black mb-6">Gratuit</div>
                 <ul className="mb-8 space-y-4 text-lg font-bold">
-                  <li>✍️ 200-1000 mots/jour</li>
-                  <li>📊 Tracking cérébral</li>
-                  <li>🎯 3 challenges/semaine</li>
+                  <li>✍️ Écriture limitée à 500 mots/jour</li>
+                  <li>📊 Mode Zen basique</li>
+                  <li>🎯 Stats personnelles simples</li>
+                  <li>🏆 1 badge à débloquer</li>
+                  <li>📊 Accès au classement</li>
                 </ul>
                 <button className="w-full bg-black text-white font-black py-3 px-6 hover:bg-yellow-300 hover:text-black transition-all">
                   COMMENCER
@@ -213,19 +215,21 @@ export default function Home() {
                 whileHover={{ scale: 1.05, rotate: 1 }}
                 className="p-6 bg-yellow-300 border-4 border-black text-center relative overflow-hidden"
               >
-                <div className="absolute top-4 right-4 bg-black text-white px-4 py-1 font-black transform rotate-12">
+                <div className="absolute top-0 right-0 bg-black text-white px-4 py-1 font-black transform rotate-12">
                   POPULAIRE
                 </div>
-                <div className="text-2xl font-black mb-4">CERVEAU PRO</div>
-                <div className="text-5xl font-black mb-6">29€/mois</div>
+                <div className="text-2xl font-black mb-4">CERVEAU ÉVEILLÉ</div>
+                <div className="text-5xl font-black mb-6">2.99€/mois</div>
                 <ul className="mb-8 space-y-4 text-lg font-bold">
-                  <li>🧠 Intelligence artificielle</li>
-                  <li>👥 Coach personnel</li>
-                  <li>🎮 Tous les challenges</li>
-                  <li>📱 App mobile exclusive</li>
+                  <li>✨ Écriture illimitée</li>
+                  <li>📝 Tous les modes d'écriture</li>
+                  <li>🎭 Analyse émotionnelle détaillée</li>
+                  <li>🏆 Tous les badges</li>
+                  <li>📤 Export des textes</li>
+                  <li>🚫 Sans publicité</li>
                 </ul>
                 <button className="w-full bg-black text-white font-black py-3 px-6 hover:bg-white hover:text-black transition-all">
-                  DEVENIR PRO
+                  DEVENIR ÉVEILLÉ
                 </button>
               </motion.div>
               <motion.div
@@ -233,15 +237,16 @@ export default function Home() {
                 className="p-6 bg-white border-4 border-black text-center"
               >
                 <div className="text-2xl font-black mb-4">CERVEAU ULTIME</div>
-                <div className="text-5xl font-black mb-6">Sur mesure</div>
+                <div className="text-5xl font-black mb-6">7.99€/mois</div>
                 <ul className="mb-8 space-y-4 text-lg font-bold">
-                  <li>🏢 Solution entreprise</li>
-                  <li>👥 Formation équipe</li>
-                  <li>📈 Analytics avancés</li>
-                  <li>🎓 Programme personnalisé</li>
+                  <li>✨ Tout le contenu Éveillé</li>
+                  <li>📊 Statistiques avancées</li>
+                  <li>🎯 Prompts personnalisés</li>
+                  <li>🏆 Challenges hebdomadaires exclusifs</li>
+                  <li>👥 Mode collaboration</li>
                 </ul>
                 <button className="w-full bg-black text-white font-black py-3 px-6 hover:bg-yellow-300 hover:text-black transition-all">
-                  CONTACTEZ-NOUS
+                DEVENIR AUGMENTÉ
                 </button>
               </motion.div>
             </div>
