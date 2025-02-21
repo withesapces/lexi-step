@@ -259,7 +259,7 @@ export default function WritingGameTemplate({
           >
             <div className="flex justify-between items-center mb-2">
               <span className={`font-bold ${darkMode ? "text-teal-300" : "text-black"}`}>
-                MON ÉCRIN
+                MON TEXTE
               </span>
               <span className={`text-sm font-bold ${darkMode ? "text-gray-400" : "text-gray-700"}`}>
                 MOTS: {wordCount}/{dailyWordGoal}
