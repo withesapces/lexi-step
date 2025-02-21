@@ -1,9 +1,10 @@
+// /src/app/components/GameModeSlider.tsx
+
 "use client";
 
 import { useRef, useState, useEffect } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import confetti from "canvas-confetti";
 
 // Types for the component props
 export interface GameMode {
@@ -14,7 +15,7 @@ export interface GameMode {
   redirectUrl: string;
   emoji: string;
   prompts: string[];
-  isUnderConstruction?: boolean; // nouvelle propriété
+  isUnderConstruction?: boolean; 
 }
 
 interface GameModeSliderProps {
@@ -87,14 +88,6 @@ export default function GameModeSlider({
     };
   }, [activeSlide, gameModes.length]);
 
-  const launchConfetti = () => {
-    confetti({
-      particleCount: 100,
-      spread: 70,
-      origin: { y: 0.6 }
-    });
-  };
-
   const navigateSlider = (direction: number) => {
     let newSlide = activeSlide + direction;
     if (newSlide < 0) newSlide = gameModes.length - 1;
@@ -134,7 +127,6 @@ export default function GameModeSlider({
     if (onModeSelect) {
       onModeSelect(modeId, index);
     }
-    launchConfetti();
     window.location.href = gameModes[index].redirectUrl;
   };
 
