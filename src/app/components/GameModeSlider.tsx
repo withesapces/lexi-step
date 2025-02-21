@@ -272,7 +272,6 @@ export default function GameModeSlider({
                           whileTap={{ scale: 0.95 }}
                           className="bg-black text-white font-black py-4 px-6 border-4 border-white hover:bg-white hover:text-black transition-all w-full"
                           style={{
-                            clipPath: "polygon(5% 0%, 100% 0%, 95% 100%, 0% 100%)",
                             transform: "rotate(-2deg)"
                           }}
                         >

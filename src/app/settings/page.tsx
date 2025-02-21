@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Navbar from "../components/Navbar";
+import Moodboard from "../components/moodboard";
 
 export default function ProfilePage() {
   const { data: session, status } = useSession();
@@ -42,7 +43,7 @@ export default function ProfilePage() {
         }
         
         // Récupérer les badges
-        const badgesRes = await fetch("/api/user/badges");
+        const badgesRes = await fetch("/api/user/badge");
         if (badgesRes.ok) {
           const badgesData = await badgesRes.json();
           setBadges(badgesData);
@@ -384,6 +385,24 @@ export default function ProfilePage() {
             </div>
           </motion.div>
         </section>
+
+        {/* Dans votre ProfilePage, ajoutez le Moodboard avant la section des badges */}
+<section className="py-16 bg-white border-y-8 border-black">
+  <motion.div
+    initial={{ opacity: 0 }}
+    whileInView={{ opacity: 1 }}
+    viewport={{ once: true }}
+    className="max-w-5xl mx-auto px-4"
+  >
+    <h2 className="text-4xl font-black mb-12 text-center transform rotate-1">
+      <span className="bg-black text-white px-4 py-2 inline-block">
+        TON CERVEAU ÉMOTIONNEL
+      </span>
+    </h2>
+    
+    <Moodboard />
+  </motion.div>
+</section>
 
         {/* Section déconnexion */}
         <section className="py-16 bg-black text-white">

@@ -155,12 +155,12 @@ export default function GameModePage() {
                 variants={itemVariants}
                 className="flex flex-col sm:flex-row gap-4"
               >
-                <div className="bg-black text-white p-4 transform rotate-1 border-2 border-black">
+                <div className="bg-black text-white p-4 transform border-2 border-black">
                   <div className="font-bold">STREAK ACTUELLE</div>
                   <div className="text-4xl font-black text-yellow-300">{streakDays} JOURS 🔥</div>
                 </div>
                 
-                <div className="bg-white p-4 transform -rotate-1 border-2 border-black">
+                <div className="bg-white p-4 transform border-2 border-black">
                   <div className="font-bold">OBJECTIF QUOTIDIEN</div>
                   <div className="text-2xl font-black">{dailyGoal} MOTS</div>
                 </div>

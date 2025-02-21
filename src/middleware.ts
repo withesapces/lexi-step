@@ -1,5 +1,3 @@
-console.log("Middleware NextAuth lancé");
-
 import { withAuth } from "next-auth/middleware";
 
 export default withAuth(
@@ -9,7 +7,6 @@ export default withAuth(
     },
     callbacks: {
       authorized: ({ token }) => {
-        console.log("Token dans middleware :", token);
         return !!token;
       },
     },

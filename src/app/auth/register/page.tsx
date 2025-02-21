@@ -1,3 +1,5 @@
+// src/app/auth/register/page.tsx
+
 "use client";
 
 import { useState } from "react";
@@ -24,8 +26,6 @@ export default function Register() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    console.log("Données envoyées :", JSON.stringify(formData));
-
     try {
       const response = await fetch("/api/auth/register", {
         method: "POST",
@@ -34,8 +34,6 @@ export default function Register() {
         },
         body: JSON.stringify(formData),
       });
-
-      console.log("Réponse brute :", response);
 
       const data = await response.json();
 
@@ -65,7 +63,6 @@ export default function Register() {
 
   const handleGoogleSignIn = () => {
     // Placeholder pour la connexion avec Google
-    console.log("Connexion avec Google");
     signIn("google", { callbackUrl: "/dashboard" });
   };
 
