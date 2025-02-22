@@ -31,7 +31,7 @@ export default function Home() {
     <>
       <Navbar />
       <div className="overflow-hidden bg-yellow-300">
-        {/* Hero avec un style néobrutalist */}
+        {/* Hero - ATTENTION */}
         <section className="min-h-screen flex items-center relative">
           <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-20 pointer-events-none" />
           <motion.div
@@ -42,33 +42,33 @@ export default function Home() {
           >
             <motion.div
               variants={itemVariants}
-              className="text-8xl font-black mb-8 transform -rotate-2"
+              className="text-7xl font-black mb-8 transform -rotate-2"
               style={{ textShadow: "4px 4px 0px #000" }}
             >
-              BOOST TON CERVEAU
+              TON CERVEAU EST EN
               <br />
-              <span className="text-6xl bg-black text-yellow-300 px-4 py-2 inline-block rotate-1">
-                EN ÉCRIVANT
+              <span className="text-6xl bg-black text-red-500 px-4 py-2 inline-block rotate-1">
+                MODE PANIQUE
               </span>
             </motion.div>
             <motion.p
               variants={itemVariants}
               className="text-2xl mb-8 font-bold bg-black text-white px-6 py-3 transform rotate-1 inline-block"
             >
-              🧠 Un cerveau plus performant en 21 jours ou remboursé
+              😱 Tu oublies tout • Tu procrastines • Tu stress TOUT LE TEMPS
             </motion.p>
-            <motion.button
+            <motion.div
               variants={itemVariants}
-              className="text-2xl font-black bg-black text-white px-8 py-4 rounded-none border-4 border-black hover:bg-yellow-300 hover:text-black transition-all transform hover:-translate-y-1 hover:rotate-2"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              className="text-xl font-bold mb-8 bg-white p-4 border-4 border-black transform -rotate-1"
             >
-              COMMENCER L'AVENTURE →
-            </motion.button>
+              Et si je te disais qu'on peut réparer tout ça en 21 jours ?
+              <br/>
+              <span className="text-sm">(Sans méditation ni huiles essentielles douteuses)</span>
+            </motion.div>
           </motion.div>
         </section>
 
-        {/* Section Avantages avec style brutal */}
+        {/* PROBLÈME & AGITATION */}
         <section className="py-20 bg-white">
           <motion.div
             initial={{ opacity: 0 }}
@@ -78,45 +78,45 @@ export default function Home() {
           >
             <h2 className="text-5xl font-black mb-16 text-center transform -rotate-1">
               <span className="bg-black text-white px-4 py-2 inline-block">
-                POURQUOI ÇA MARCHE ?
+                TON CERVEAU TE FAIT LA GUERRE
               </span>
             </h2>
             <div className="grid md:grid-cols-3 gap-8">
               <motion.div
                 whileHover={{ scale: 1.02, rotate: -1 }}
-                className="p-6 bg-pink-400 border-4 border-black"
+                className="p-6 bg-red-400 border-4 border-black"
               >
-                <h3 className="text-2xl font-black mb-4">🔥 NEUROPLASTICITÉ</h3>
+                <h3 className="text-2xl font-black mb-4">🤯 MODE CHAOS</h3>
                 <p className="font-bold">
-                  L'écriture active 7 zones de ton cerveau simultanément.
-                  C'est comme un CrossFit cérébral quotidien.
+                  Ton cerveau ressemble à un appart étudiant un dimanche matin.
+                  Un vrai bazar qui t'empêche d'être productif.
                 </p>
               </motion.div>
               <motion.div
                 whileHover={{ scale: 1.02, rotate: 1 }}
-                className="p-6 bg-blue-400 border-4 border-black"
+                className="p-6 bg-orange-400 border-4 border-black"
               >
-                <h3 className="text-2xl font-black mb-4">⚡️ EFFET COMPOUND</h3>
+                <h3 className="text-2xl font-black mb-4">🦥 MODE PARESSE</h3>
                 <p className="font-bold">
-                  21 jours = nouvelles connexions neuronales.
-                  3 mois = transformation cognitive complète.
+                  Ta to-do list te nargue pendant que tu regardes ta 47ème vidéo
+                  de chats sur TikTok.
                 </p>
               </motion.div>
               <motion.div
                 whileHover={{ scale: 1.02, rotate: -1 }}
-                className="p-6 bg-green-400 border-4 border-black"
+                className="p-6 bg-purple-400 border-4 border-black"
               >
-                <h3 className="text-2xl font-black mb-4">🎯 GAMIFICATION</h3>
+                <h3 className="text-2xl font-black mb-4">😰 MODE PANIQUE</h3>
                 <p className="font-bold">
-                  Challenges quotidiens, récompenses et compétition amicale.
-                  Développe ton cerveau en t'amusant.
+                  Ton anxiété a son propre compte Instagram et plus d'abonnés que toi.
+                  C'est dire.
                 </p>
               </motion.div>
             </div>
           </motion.div>
         </section>
 
-        {/* Section Social Proof */}
+        {/* SOLUTION */}
         <section className="py-20 bg-black text-white">
           <motion.div
             initial={{ opacity: 0, y: 50 }}
@@ -126,13 +126,64 @@ export default function Home() {
           >
             <h2 className="text-5xl font-black mb-16 text-center">
               <span className="bg-yellow-300 text-black px-4 py-2 inline-block transform rotate-1">
-                ILS SONT DEVENUS DES GÉNIES
+                LA SOLUTION : ÉCRITURE = SUPER-POUVOIRS
               </span>
             </h2>
-            <div className="grid md:grid-cols-2 gap-8 mb-8 ">
+            <div className="grid md:grid-cols-2 gap-8">
               <motion.div
                 whileHover={{ scale: 1.02, rotate: -1 }}
                 className="p-6 bg-white text-black border-4 border-yellow-300"
+              >
+                <div className="text-3xl mb-4">🧠 Mode Boost Activé</div>
+                <p className="text-xl font-bold">
+                  L'écriture, c'est comme du RedBull pour ton cerveau, mais sans les ailes ni les palpitations.
+                  21 jours = cerveau neuf.
+                </p>
+              </motion.div>
+              <motion.div
+                whileHover={{ scale: 1.02, rotate: 1 }}
+                className="p-6 bg-white text-black border-4 border-yellow-300"
+              >
+                <div className="text-3xl mb-4">🎮 Mode Jeu</div>
+                <p className="text-xl font-bold">
+                  Des challenges quotidiens plus addictifs que les séries Netflix.
+                  Bonus : tu deviens intelligent en même temps.
+                </p>
+              </motion.div>
+            </div>
+          </motion.div>
+        </section>
+
+        {/* Social Proof - DÉSIR */}
+        <section className="py-20 bg-gradient-to-r from-purple-400 via-yellow-300 to-green-400">
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            className="max-w-6xl mx-auto px-4"
+          >
+            <h2 className="text-5xl font-black mb-16 text-center">
+              <span className="bg-black text-white px-4 py-2 inline-block transform -rotate-2">
+                ILS SONT PASSÉS DU CÔTÉ LUMINEUX
+              </span>
+            </h2>
+
+            {/* Stats Banner */}
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              className="bg-black text-white p-6 mb-12 text-center"
+            >
+              <p className="text-2xl font-black">
+                +10 000 cerveaux optimisés • 93% de satisfaction • 21 jours pour changer
+              </p>
+            </motion.div>
+
+            {/* Testimonials Grid */}
+            <div className="grid md:grid-cols-2 gap-8">
+              <motion.div
+                whileHover={{ scale: 1.02, rotate: -1 }}
+                className="p-6 bg-white border-4 border-black"
               >
                 <div className="text-3xl mb-4">🧠 +43% de mémoire</div>
                 <p className="text-xl font-bold">
@@ -141,9 +192,10 @@ export default function Home() {
                 </p>
                 <p className="mt-4 font-black">- Marie K, Développeuse</p>
               </motion.div>
+
               <motion.div
                 whileHover={{ scale: 1.02, rotate: 1 }}
-                className="p-6 bg-white text-black border-4 border-yellow-300"
+                className="p-6 bg-white border-4 border-black"
               >
                 <div className="text-3xl mb-4">💪 +38% de productivité</div>
                 <p className="text-xl font-bold">
@@ -152,11 +204,10 @@ export default function Home() {
                 </p>
                 <p className="mt-4 font-black">- Thomas R, Entrepreneur</p>
               </motion.div>
-            </div>
-            <div className="grid md:grid-cols-2 gap-8">
+
               <motion.div
                 whileHover={{ scale: 1.02, rotate: -1 }}
-                className="p-6 bg-white text-black border-4 border-yellow-300"
+                className="p-6 bg-white border-4 border-black"
               >
                 <div className="text-3xl mb-4">🤯 Clarté mentale</div>
                 <p className="text-xl font-bold">
@@ -165,9 +216,10 @@ export default function Home() {
                 </p>
                 <p className="mt-4 font-black">- Camille B, Ex-consultante</p>
               </motion.div>
+
               <motion.div
                 whileHover={{ scale: 1.02, rotate: 1 }}
-                className="p-6 bg-white text-black border-4 border-yellow-300"
+                className="p-6 bg-white border-4 border-black"
               >
                 <div className="text-3xl mb-4">💰 Économies réalisées</div>
                 <p className="text-xl font-bold">
@@ -177,83 +229,37 @@ export default function Home() {
                 <p className="mt-4 font-black">- Julie F, Raisonnable</p>
               </motion.div>
             </div>
-          </motion.div>
-        </section>
 
-        {/* Section Prix avec style brutal */}
-        <section className="py-20 bg-gradient-to-r from-pink-400 via-yellow-300 to-blue-400">
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            className="max-w-6xl mx-auto px-4"
-          >
-            <h2 className="text-5xl font-black mb-16 text-center">
-              <span className="bg-black text-white px-4 py-2 inline-block transform -rotate-2">
-                CHOISIS TON NIVEAU DE GÉNIE
-              </span>
-            </h2>
-            <div className="grid md:grid-cols-3 gap-8">
-              <motion.div
-                whileHover={{ scale: 1.05, rotate: -1 }}
-                className="p-6 bg-white border-4 border-black text-center relative overflow-hidden"
+            {/* Additional Testimonials with Different Style */}
+            <div className="mt-12 grid md:grid-cols-2 gap-8">
+            <motion.div
+                whileHover={{ scale: 1.02, rotate: 1 }}
+                className="p-6 bg-white border-4 border-black"
               >
-                <div className="text-2xl font-black mb-4">CERVEAU BASIQUE</div>
-                <div className="text-5xl font-black mb-6">Gratuit</div>
-                <ul className="mb-8 space-y-4 text-lg font-bold">
-                  <li>✍️ Écriture limitée à 500 mots/jour</li>
-                  <li>📊 Mode Zen basique</li>
-                  <li>🎯 Stats personnelles simples</li>
-                  <li>🏆 1 badge à débloquer</li>
-                  <li>📊 Accès au classement</li>
-                </ul>
-                <button className="w-full bg-black text-white font-black py-3 px-6 hover:bg-yellow-300 hover:text-black transition-all">
-                  COMMENCER
-                </button>
+                <div className="text-3xl mb-4">🔑 Organisation</div>
+                <p className="text-xl font-bold">
+                  "Avant, je perdais mes clés 3 fois par jour. Maintenant je les perds qu'une fois !
+                  C'est ça le progrès 🚀"
+                </p>
+                <p className="mt-4 font-black">- Kevin L, Plus vraiment tête en l'air</p>
               </motion.div>
+
               <motion.div
-                whileHover={{ scale: 1.05, rotate: 1 }}
-                className="p-6 bg-yellow-300 border-4 border-black text-center relative overflow-hidden"
+                whileHover={{ scale: 1.02, rotate: 1 }}
+                className="p-6 bg-white border-4 border-black"
               >
-                <div className="absolute top-0 right-0 bg-black text-white px-4 py-1 font-black transform rotate-12">
-                  POPULAIRE
-                </div>
-                <div className="text-2xl font-black mb-4">CERVEAU ÉVEILLÉ</div>
-                <div className="text-5xl font-black mb-6">2.99€/mois</div>
-                <ul className="mb-8 space-y-4 text-lg font-bold">
-                  <li>✨ Écriture illimitée</li>
-                  <li>📝 Tous les modes d'écriture</li>
-                  <li>🎭 Analyse émotionnelle détaillée</li>
-                  <li>🏆 Tous les badges</li>
-                  <li>📤 Export des textes</li>
-                  <li>🚫 Sans publicité</li>
-                </ul>
-                <button className="w-full bg-black text-white font-black py-3 px-6 hover:bg-white hover:text-black transition-all">
-                  DEVENIR ÉVEILLÉ
-                </button>
-              </motion.div>
-              <motion.div
-                whileHover={{ scale: 1.05, rotate: -1 }}
-                className="p-6 bg-white border-4 border-black text-center"
-              >
-                <div className="text-2xl font-black mb-4">CERVEAU ULTIME</div>
-                <div className="text-5xl font-black mb-6">7.99€/mois</div>
-                <ul className="mb-8 space-y-4 text-lg font-bold">
-                  <li>✨ Tout le contenu Éveillé</li>
-                  <li>📊 Statistiques avancées</li>
-                  <li>🎯 Prompts personnalisés</li>
-                  <li>🏆 Challenges hebdomadaires exclusifs</li>
-                  <li>👥 Mode collaboration</li>
-                </ul>
-                <button className="w-full bg-black text-white font-black py-3 px-6 hover:bg-yellow-300 hover:text-black transition-all">
-                DEVENIR AUGMENTÉ
-                </button>
+                <div className="text-3xl mb-4">🎯 Focus</div>
+                <p className="text-xl font-bold">
+                  "J'ai enfin fini cette série Netflix que je regardais depuis 2019.
+                  Et en plus, je me souviens de l'intrigue !"
+                </p>
+                <p className="mt-4 font-black">- Sarah M, Focus Master</p>
               </motion.div>
             </div>
           </motion.div>
         </section>
 
-        {/* CTA Final avec style brutal */}
+        {/* CTA Final - ACTION */}
         <section className="py-20 bg-black text-white">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -263,19 +269,26 @@ export default function Home() {
           >
             <h2 className="text-6xl font-black mb-8">
               <span className="bg-yellow-300 text-black px-4 py-2 inline-block transform -rotate-2">
-                PRÊT À DEVENIR UN GÉNIE ?
+                RÉVEILLE LA BÊTE
               </span>
             </h2>
-            <p className="text-2xl mb-8 font-bold">
-              Rejoins +10 000 personnes qui ont boosté leur cerveau avec LexiStep
+            <p className="text-2xl mb-8 font-bold bg-white text-black p-4 inline-block transform rotate-1">
+              21 jours pour passer de "cerveau Windows 95" à "cerveau NASA"
             </p>
+            <div className="mb-8 text-lg">
+              <span className="bg-red-500 text-white px-2 py-1 font-bold">ATTENTION</span>
+              <span className="text-yellow-300 font-bold"> Plus que 7 places en mode GRATUIT aujourd'hui</span>
+            </div>
             <motion.button
               whileHover={{ scale: 1.05, rotate: 1 }}
               whileTap={{ scale: 0.95 }}
               className="text-2xl font-black bg-yellow-300 text-black px-8 py-4 rounded-none border-4 border-yellow-300 hover:bg-white transition-all"
             >
-              COMMENCER MAINTENANT →
+              TRANSFORMER MON CERVEAU →
             </motion.button>
+            <p className="mt-4 text-sm font-bold">
+              Garantie "Pas Content, Remboursé" pendant 21 jours
+            </p>
           </motion.div>
         </section>
       </div>

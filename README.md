@@ -37,11 +37,11 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 
 ## TODO 
 
+Changer la couleur dans le menu de mes textes
 
+1. Le streak ne doit pas être pris en compte si l'utilisateur n'a pas atteint son quota journalier (au moment de l'enregistrement d'un writing)
 Faire les badges (une fois qu'on a gagné un badge, on ne doit pas pouvoir le perdre)
 Quand on change un objectif quotidien, il doit être effectif que demain
-Le streak ne doit pas être pris en compte si l'utilisateur n'a pas atteint son quota journalier (au moment de l'enregistrement d'un writing)
-Changer la couleur dans le menu de mes textes
 Avant le lancement il doit y avoir le mode prompt comme jeu
 Quand on supprime un article, ça ne doit pas supprimer le nombre de mots totaux
 L'utilisateur doit avoir un nom de profil qui doit être unique et pas un nom et prénom
