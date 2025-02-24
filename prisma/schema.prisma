@@ -78,10 +78,11 @@ model Badge {
   defaultDescription String? // Optionnel
   condition          String?
   conditionValue     Int?
+  category           String? 
   createdAt          DateTime @default(now())
-
-  translations BadgeTranslation[]
-  userBadges   UserBadge[]
+  
+  translations       BadgeTranslation[]
+  userBadges         UserBadge[]
 }
 
 model BadgeTranslation {

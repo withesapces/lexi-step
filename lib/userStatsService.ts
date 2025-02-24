@@ -115,6 +115,8 @@ export async function getUserBadges(prisma: PrismaClient, userId: string, locale
       name: translation?.name || badge.defaultName || "Badge sans nom",
       description: translation?.description || badge.defaultDescription || "Description non disponible",
       earned: earnedBadgeIds.has(badge.id),
+      // Ajouter la catégorie du badge
+      category: badge.category || "Autres",
       // Déterminer l'icône en fonction du type de badge
       icon: determineIconForBadge(badge.condition, badge.conditionValue)
     };

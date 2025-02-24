@@ -1,3 +1,5 @@
+// /src/app/settings/page.tsx
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -6,6 +8,7 @@ import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Navbar from "../components/Navbar";
 import Moodboard from "../components/moodboard";
+import BadgeGallery from "../components/BadgeGallery";
 
 export default function ProfilePage() {
   const { data: session, status } = useSession();
@@ -41,7 +44,7 @@ export default function ProfilePage() {
           });
           setDailyGoal(stats.dailyGoal);
         }
-        
+
         // Récupérer les badges
         const badgesRes = await fetch("/api/user/badge");
         if (badgesRes.ok) {
@@ -54,7 +57,7 @@ export default function ProfilePage() {
         setLoadingStats(false);
       }
     }
-    
+
     if (status === "authenticated") {
       fetchUserData();
     }
@@ -76,12 +79,12 @@ export default function ProfilePage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ dailyWordGoal: dailyGoal }),
       });
-      
+
       if (res.ok) {
         // Afficher l'animation de confetti
         setShowConfetti(true);
         setTimeout(() => setShowConfetti(false), 3000);
-        
+
         // Actualiser les statistiques après la mise à jour des paramètres
         // car la streak a peut-être été mise à jour
         const statsRes = await fetch("/api/user/stats");
@@ -105,23 +108,23 @@ export default function ProfilePage() {
 
   // Stats d'utilisateur formatées pour l'affichage
   const stats = [
-    { 
-      label: "JOURS CONSÉCUTIFS", 
-      value: userStats.streak, 
-      icon: "🔥", 
-      color: "bg-pink-400" 
+    {
+      label: "JOURS CONSÉCUTIFS",
+      value: userStats.streak,
+      icon: "🔥",
+      color: "bg-pink-400"
     },
-    { 
-      label: "MOTS TOTAUX", 
-      value: userStats.totalWords.toLocaleString(), 
-      icon: "📝", 
-      color: "bg-blue-400" 
+    {
+      label: "MOTS TOTAUX",
+      value: userStats.totalWords.toLocaleString(),
+      icon: "📝",
+      color: "bg-blue-400"
     },
-    { 
-      label: "NIVEAU CÉRÉBRAL", 
-      value: userStats.totalWords > 50000 ? "GÉNIE" : userStats.totalWords > 20000 ? "PRO" : "DÉBUTANT", 
-      icon: "🧠", 
-      color: "bg-green-400" 
+    {
+      label: "NIVEAU CÉRÉBRAL",
+      value: userStats.totalWords > 50000 ? "GÉNIE" : userStats.totalWords > 20000 ? "PRO" : "DÉBUTANT",
+      icon: "🧠",
+      color: "bg-green-400"
     },
   ];
 
@@ -143,33 +146,32 @@ export default function ProfilePage() {
   return (
     <div className="min-h-screen bg-yellow-300 overflow-hidden">
       <Navbar />
-      
+
       {/* Effet de confetti pour la sauvegarde */}
       {showConfetti && (
         <div className="fixed inset-0 pointer-events-none z-50">
           {[...Array(50)].map((_, i) => (
             <motion.div
               key={i}
-              initial={{ 
-                top: "-10%", 
+              initial={{
+                top: "-10%",
                 left: `${Math.random() * 100}%`,
                 rotate: 0,
                 opacity: 1
               }}
-              animate={{ 
-                top: "110%", 
+              animate={{
+                top: "110%",
                 rotate: 360,
                 opacity: 0
               }}
-              transition={{ 
+              transition={{
                 duration: 3,
                 delay: Math.random() * 0.5
               }}
-              className={`absolute w-4 h-4 ${
-                ["bg-pink-500", "bg-blue-500", "bg-green-500", "bg-yellow-500"][
-                  Math.floor(Math.random() * 4)
+              className={`absolute w-4 h-4 ${["bg-pink-500", "bg-blue-500", "bg-green-500", "bg-yellow-500"][
+                Math.floor(Math.random() * 4)
                 ]
-              }`}
+                }`}
             />
           ))}
         </div>
@@ -177,7 +179,7 @@ export default function ProfilePage() {
 
       <div className="relative">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-20 pointer-events-none" />
-        
+
         {/* En-tête du profil */}
         <section className="py-16 relative">
           <motion.div
@@ -195,8 +197,8 @@ export default function ProfilePage() {
                   <span className="text-7xl">{user?.name?.charAt(0) || "?"}</span>
                 </div>
                 <div className="absolute top-0 right-0 bg-black text-white text-xs font-black px-2 py-1 transform rotate-12">
-                  {userStats.totalWords > 50000 ? "GÉNIE" : 
-                   userStats.totalWords > 20000 ? "PRO" : "NOVICE"}
+                  {userStats.totalWords > 50000 ? "GÉNIE" :
+                    userStats.totalWords > 20000 ? "PRO" : "NOVICE"}
                 </div>
               </motion.div>
 
@@ -285,8 +287,8 @@ export default function ProfilePage() {
                       {dailyGoal < 300
                         ? "NIVEAU DÉBUTANT - C'est un bon début!"
                         : dailyGoal < 600
-                        ? "NIVEAU INTERMÉDIAIRE - Tu développes ton cerveau!"
-                        : "NIVEAU EXPERT - Tu vas devenir un génie!"}
+                          ? "NIVEAU INTERMÉDIAIRE - Tu développes ton cerveau!"
+                          : "NIVEAU EXPERT - Tu vas devenir un génie!"}
                     </p>
                   </div>
                   <motion.button
@@ -307,7 +309,7 @@ export default function ProfilePage() {
                 className="p-6 bg-blue-400 border-4 border-black relative overflow-hidden"
               >
                 <h3 className="text-2xl font-black mb-6">⚡️ TA PROGRESSION</h3>
-                
+
                 <div className="relative z-10">
                   <div className="flex justify-between items-center mb-2">
                     <span className="font-black">AUJOURD'HUI</span>
@@ -315,9 +317,9 @@ export default function ProfilePage() {
                       {userStats.today} / {dailyGoal} MOTS
                     </span>
                   </div>
-                  
+
                   <div className="w-full h-8 bg-white border-4 border-black mb-6">
-                    <div 
+                    <div
                       className="h-full bg-green-400 border-r-4 border-black transition-all duration-500"
                       style={{ width: `${dailyProgressPercent}%` }}
                     />
@@ -333,7 +335,7 @@ export default function ProfilePage() {
                         <div className="h-full bg-green-400" style={{ width: `${Math.min(100, (userStats.week / (dailyGoal * 7)) * 100)}%` }} />
                       </div>
                     </div>
-                    
+
                     <div>
                       <div className="flex justify-between items-center">
                         <span className="font-bold">Ce mois</span>
@@ -354,7 +356,7 @@ export default function ProfilePage() {
                     CONTINUER À ÉCRIRE ✍️
                   </motion.button>
                 </div>
-                
+
                 {/* Éléments décoratifs */}
                 <div className="absolute -right-8 -bottom-8 w-32 h-32 bg-yellow-300 rounded-full opacity-30" />
                 <div className="absolute -left-4 -top-4 w-16 h-16 bg-pink-500 rounded-full opacity-20" />
@@ -377,48 +379,28 @@ export default function ProfilePage() {
               </span>
             </h2>
 
-            <div className="grid md:grid-cols-3 gap-6">
-              {badges.map((badge) => (
-                <motion.div
-                  key={badge.id}
-                  whileHover={badge.earned ? { scale: 1.03, rotate: badge.id % 2 === 0 ? 2 : -2 } : {}}
-                  className={`p-6 border-4 border-black text-center ${
-                    badge.earned ? "bg-white" : "bg-gray-200 grayscale"
-                  }`}
-                >
-                  <div className="text-5xl mb-4">{badge.icon}</div>
-                  <h3 className="text-xl font-black mb-2">{badge.name}</h3>
-                  <p className="font-bold text-sm">
-                    {badge.description}
-                  </p>
-                  {!badge.earned && (
-                    <div className="mt-4 bg-black text-white py-1 px-2 inline-block text-xs font-black transform -rotate-2">
-                      À DÉBLOQUER
-                    </div>
-                  )}
-                </motion.div>
-              ))}
-            </div>
+            {/* Nouveau composant de galerie de badges */}
+            <BadgeGallery badges={badges} />
           </motion.div>
         </section>
 
         {/* Dans votre ProfilePage, ajoutez le Moodboard avant la section des badges */}
-<section className="py-16 bg-white border-y-8 border-black">
-  <motion.div
-    initial={{ opacity: 0 }}
-    whileInView={{ opacity: 1 }}
-    viewport={{ once: true }}
-    className="max-w-5xl mx-auto px-4"
-  >
-    <h2 className="text-4xl font-black mb-12 text-center transform rotate-1">
-      <span className="bg-black text-white px-4 py-2 inline-block">
-        🌌 COSMOS ÉMOTIONNEL
-      </span>
-    </h2>
-    
-    <Moodboard />
-  </motion.div>
-</section>
+        <section className="py-16 bg-white border-y-8 border-black">
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            className="max-w-5xl mx-auto px-4"
+          >
+            <h2 className="text-4xl font-black mb-12 text-center transform rotate-1">
+              <span className="bg-black text-white px-4 py-2 inline-block">
+                🌌 COSMOS ÉMOTIONNEL
+              </span>
+            </h2>
+
+            <Moodboard />
+          </motion.div>
+        </section>
 
         {/* Section déconnexion */}
         <section className="py-16 bg-black text-white">
