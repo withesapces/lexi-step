@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { MOODS, Mood, normalizeMoodValue, getMoodByValue, calculateMoodHeight } from "../../config/moods";
+import { MOODS, Mood, normalizeMoodValue, getMoodByValue } from "../../config/moods";
 
 interface MoodHistoryEntry {
     id: string;
@@ -9,10 +9,31 @@ interface MoodHistoryEntry {
     wordCount: number;
 }
 
+interface MoodSummary {
+    date: string; // Date de début de la période (jour, semaine ou mois)
+    endDate?: string; // Date de fin pour les regroupements (semaine ou mois)
+    periodType: "day" | "week" | "month"; // Type de période
+    averageMoodValue: number;
+    totalEntries: number;
+    totalWords: number;
+    moods: {
+        [key: string]: number;
+    };
+    dominantMood: Mood;
+    // Pour la vue détaillée d'une semaine
+    dailyMoods?: {
+        date: string;
+        dominantMood: Mood;
+        entries: number;
+    }[];
+}
+
 export default function StyledMoodTracker() {
     const [moodHistory, setMoodHistory] = useState<MoodHistoryEntry[]>([]);
+    const [filteredSummaries, setFilteredSummaries] = useState<MoodSummary[]>([]);
     const [loading, setLoading] = useState(true);
     const [timespan, setTimespan] = useState<"week" | "month" | "year">("month");
+    const [selectedPeriod, setSelectedPeriod] = useState<MoodSummary | null>(null);
 
     // Animation variants
     const containerVariants = {
@@ -40,9 +61,10 @@ export default function StyledMoodTracker() {
                 const response = await fetch("/api/user/mood");
                 if (response.ok) {
                     const data = await response.json();
-                    setMoodHistory(data.sort((a: MoodHistoryEntry, b: MoodHistoryEntry) =>
+                    const sortedData = data.sort((a: MoodHistoryEntry, b: MoodHistoryEntry) =>
                         new Date(a.date).getTime() - new Date(b.date).getTime()
-                    ));
+                    );
+                    setMoodHistory(sortedData);
                 }
             } catch (error) {
                 console.error("Erreur lors du chargement de l'historique des moods:", error);
@@ -54,38 +76,173 @@ export default function StyledMoodTracker() {
         fetchMoodHistory();
     }, []);
 
-    // Obtenir les détails d'un mood à partir de sa valeur
-    const getMoodDetails = (moodValue: string): Mood => {
-        const normalizedValue = normalizeMoodValue(moodValue);
-        const mood = getMoodByValue(normalizedValue);
-        return mood || MOODS[2]; // Mood par défaut si non trouvé
+    // Mettre à jour les résumés lorsque les données ou la période changent
+    useEffect(() => {
+        if (moodHistory.length > 0) {
+            const summaries = createPeriodSummaries(moodHistory, timespan);
+            setFilteredSummaries(summaries);
+            setSelectedPeriod(null); // Réinitialiser la sélection
+        }
+    }, [moodHistory, timespan]);
+
+    // Obtenir le premier jour de la semaine pour une date donnée
+    const getWeekStartDate = (date: Date): Date => {
+        const day = date.getDay();
+        const diff = date.getDate() - day + (day === 0 ? -6 : 1); // Ajuster si c'est dimanche
+        const weekStart = new Date(date);
+        weekStart.setDate(diff);
+        weekStart.setHours(0, 0, 0, 0);
+        return weekStart;
     };
 
-    // Filtrer les données selon la période sélectionnée
-    const getFilteredData = () => {
+    // Obtenir le premier jour du mois pour une date donnée
+    const getMonthStartDate = (date: Date): Date => {
+        return new Date(date.getFullYear(), date.getMonth(), 1);
+    };
+
+    // Création des résumés adaptés à la période
+    const createPeriodSummaries = (entries: MoodHistoryEntry[], period: "week" | "month" | "year"): MoodSummary[] => {
+        // Filtrer les entrées selon la période sélectionnée
         const now = new Date();
         const cutoffDate = new Date();
 
-        if (timespan === "week") {
+        if (period === "week") {
             cutoffDate.setDate(now.getDate() - 7);
-        } else if (timespan === "month") {
+        } else if (period === "month") {
             cutoffDate.setMonth(now.getMonth() - 1);
         } else {
             cutoffDate.setFullYear(now.getFullYear() - 1);
         }
 
-        return moodHistory.filter(entry => new Date(entry.date) >= cutoffDate);
-    };
+        const filteredEntries = entries.filter(entry => new Date(entry.date) >= cutoffDate);
 
-    // Préparer les données pour le graphique
-    const prepareChartData = () => {
-        const filteredData = getFilteredData();
+        // Regrouper selon la période
+        const groupedEntries: Record<string, MoodHistoryEntry[]> = {};
 
-        return filteredData.map(entry => ({
-            date: new Date(entry.date).toLocaleDateString('fr-FR'),
-            mood: getMoodDetails(entry.moodValue),
-            wordCount: entry.wordCount
-        }));
+        filteredEntries.forEach(entry => {
+            const entryDate = new Date(entry.date);
+            let groupKey: string;
+            let periodType: "day" | "week" | "month";
+
+            if (period === "week") {
+                // Pour la semaine, regrouper par jour
+                groupKey = entryDate.toISOString().split('T')[0];
+                periodType = "day";
+            } else if (period === "month") {
+                // Pour le mois, regrouper par semaine
+                const weekStart = getWeekStartDate(entryDate);
+                groupKey = weekStart.toISOString().split('T')[0];
+                periodType = "week";
+            } else {
+                // Pour l'année, regrouper par mois
+                const monthStart = getMonthStartDate(entryDate);
+                groupKey = monthStart.toISOString().split('T')[0];
+                periodType = "month";
+            }
+
+            if (!groupedEntries[groupKey]) {
+                groupedEntries[groupKey] = [];
+            }
+            groupedEntries[groupKey].push(entry);
+        });
+
+        // Créer les résumés pour chaque groupe
+        const summaries: MoodSummary[] = Object.entries(groupedEntries).map(([startDate, groupEntries]) => {
+            // Compter les occurrences de chaque humeur
+            const moodCounts: Record<string, number> = {};
+            let totalMoodValue = 0;
+            
+            groupEntries.forEach(entry => {
+                const normalizedMoodValue = normalizeMoodValue(entry.moodValue);
+                moodCounts[normalizedMoodValue] = (moodCounts[normalizedMoodValue] || 0) + 1;
+                totalMoodValue += parseFloat(normalizedMoodValue);
+            });
+
+            // Trouver l'humeur dominante
+            let maxCount = 0;
+            let dominantMoodValue = Object.keys(MOODS)[2]; // Valeur par défaut
+            
+            Object.entries(moodCounts).forEach(([mood, count]) => {
+                if (count > maxCount) {
+                    maxCount = count;
+                    dominantMoodValue = mood;
+                }
+            });
+
+            // Calculer le nombre total de mots
+            const totalWords = groupEntries.reduce((sum, entry) => sum + entry.wordCount, 0);
+
+            const periodType = period === "week" ? "day" : (period === "month" ? "week" : "month");
+
+            // Pour les semaines, ajouter des détails quotidiens
+            let dailyMoods;
+            let endDate;
+
+            if (periodType === "week") {
+                // Regrouper par jour au sein de la semaine
+                const dailyGroups: Record<string, MoodHistoryEntry[]> = {};
+                groupEntries.forEach(entry => {
+                    const dayKey = new Date(entry.date).toISOString().split('T')[0];
+                    if (!dailyGroups[dayKey]) {
+                        dailyGroups[dayKey] = [];
+                    }
+                    dailyGroups[dayKey].push(entry);
+                });
+
+                dailyMoods = Object.entries(dailyGroups).map(([date, entries]) => {
+                    // Trouver l'humeur dominante pour ce jour
+                    const dayCounts: Record<string, number> = {};
+                    entries.forEach(entry => {
+                        const mood = normalizeMoodValue(entry.moodValue);
+                        dayCounts[mood] = (dayCounts[mood] || 0) + 1;
+                    });
+
+                    let maxDayCount = 0;
+                    let dayDominantMood = Object.keys(MOODS)[2];
+                    
+                    Object.entries(dayCounts).forEach(([mood, count]) => {
+                        if (count > maxDayCount) {
+                            maxDayCount = count;
+                            dayDominantMood = mood;
+                        }
+                    });
+
+                    return {
+                        date,
+                        dominantMood: getMoodByValue(dayDominantMood) || MOODS[2],
+                        entries: entries.length
+                    };
+                }).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+                // Calculer la date de fin (dernier jour de la semaine)
+                const startDateObj = new Date(startDate);
+                const endDateObj = new Date(startDateObj);
+                endDateObj.setDate(startDateObj.getDate() + 6);
+                endDate = endDateObj.toISOString().split('T')[0];
+            } else if (periodType === "month") {
+                // Calculer la date de fin du mois
+                const startDateObj = new Date(startDate);
+                const endDateObj = new Date(startDateObj);
+                endDateObj.setMonth(startDateObj.getMonth() + 1);
+                endDateObj.setDate(0); // Dernier jour du mois
+                endDate = endDateObj.toISOString().split('T')[0];
+            }
+
+            return {
+                date: startDate,
+                endDate,
+                periodType,
+                averageMoodValue: totalMoodValue / groupEntries.length,
+                totalEntries: groupEntries.length,
+                totalWords,
+                moods: moodCounts,
+                dominantMood: getMoodByValue(dominantMoodValue) || MOODS[2],
+                dailyMoods
+            };
+        });
+
+        // Trier par date
+        return summaries.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
     };
 
     // État de chargement stylisé
@@ -113,14 +270,86 @@ export default function StyledMoodTracker() {
         );
     }
 
-    const chartData = prepareChartData();
+    // Calculer la couleur d'une période basée sur son humeur dominante
+    const getPeriodColor = (summary: MoodSummary) => {
+        return summary.dominantMood.color;
+    };
+
+    // Calculer la taille des bulles en fonction du nombre d'entrées
+    const getBubbleSize = (entriesCount: number) => {
+        const minSize = 50;
+        const maxSize = 100;
+        const size = minSize + Math.min(entriesCount * 5, maxSize - minSize);
+        return size;
+    };
+
+    // Obtenir l'humeur dominante de la période complète
+    const getPeriodDominantMood = () => {
+        if (filteredSummaries.length === 0) return MOODS[2];
+
+        const allMoods: Record<string, number> = {};
+        
+        filteredSummaries.forEach(summary => {
+            Object.entries(summary.moods).forEach(([mood, count]) => {
+                allMoods[mood] = (allMoods[mood] || 0) + count;
+            });
+        });
+
+        let maxCount = 0;
+        let dominantMoodValue = Object.keys(MOODS)[2];
+
+        Object.entries(allMoods).forEach(([mood, count]) => {
+            if (count > maxCount) {
+                maxCount = count;
+                dominantMoodValue = mood;
+            }
+        });
+
+        return getMoodByValue(dominantMoodValue) || MOODS[2];
+    };
+
+    // Formater une date pour l'affichage
+    const formatDate = (dateString: string, format: "short" | "medium" | "long" = "medium") => {
+        const date = new Date(dateString);
+        
+        if (format === "short") {
+            return date.toLocaleDateString('fr-FR', {
+                day: 'numeric',
+                month: 'short'
+            });
+        } else if (format === "medium") {
+            return date.toLocaleDateString('fr-FR', {
+                day: 'numeric',
+                month: 'short',
+                year: '2-digit'
+            });
+        } else {
+            return date.toLocaleDateString('fr-FR', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            });
+        }
+    };
+
+    // Obtenir le libellé de la période
+    const getPeriodLabel = (summary: MoodSummary) => {
+        if (summary.periodType === "day") {
+            return formatDate(summary.date, "short");
+        } else if (summary.periodType === "week") {
+            return `${formatDate(summary.date, "short")} - ${formatDate(summary.endDate || summary.date, "short")}`;
+        } else {
+            const date = new Date(summary.date);
+            return date.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+        }
+    };
 
     // Si aucune donnée n'est disponible pour la période sélectionnée
-    if (chartData.length === 0) {
+    if (filteredSummaries.length === 0) {
         return (
             <div className="p-6 bg-white border-4 border-black relative" style={{ boxShadow: "8px 8px 0px #000" }}>
                 <h2 className="text-3xl font-black transform -rotate-2 bg-black text-yellow-300 inline-block px-4 py-2 mb-6">
-                    💡 MOOD TRACKER DE GÉNIE
+                    💡 COSMOS ÉMOTIONNEL
                 </h2>
 
                 <div className="flex justify-center mb-6">
@@ -162,7 +391,7 @@ export default function StyledMoodTracker() {
                         }}
                         transition={{ repeat: Infinity, duration: 3 }}
                     >
-                        PAS DE DONNÉES D'HUMEUR
+                        TON UNIVERS ÉMOTIONNEL EST VIDE
                     </motion.p>
                     <motion.div
                         className="text-6xl mx-auto"
@@ -172,37 +401,17 @@ export default function StyledMoodTracker() {
                         }}
                         transition={{ repeat: Infinity, duration: 3 }}
                     >
-                        🕵️
+                        🚀
                     </motion.div>
                     <p className="mt-4 font-bold bg-black text-white inline-block px-6 py-2 transform rotate-1">
-                        Écris quelque chose pour montrer ton génie émotionnel!
+                        Écris quelque chose pour créer ton cosmos émotionnel!
                     </p>
                 </div>
             </div>
         );
     }
 
-    // Obtenir l'humeur dominante
-    const getDominantMood = () => {
-        const moodCounts: Record<string, number> = {};
-        chartData.forEach(entry => {
-            moodCounts[entry.mood.value] = (moodCounts[entry.mood.value] || 0) + 1;
-        });
-
-        let maxCount = 0;
-        let dominantMoodValue = MOODS[2].value;
-
-        Object.entries(moodCounts).forEach(([mood, count]) => {
-            if (count > maxCount) {
-                maxCount = count;
-                dominantMoodValue = mood;
-            }
-        });
-
-        return getMoodByValue(dominantMoodValue) || MOODS[2];
-    };
-
-    const dominantMood = getDominantMood();
+    const periodDominantMood = getPeriodDominantMood();
 
     return (
         <motion.div
@@ -212,24 +421,6 @@ export default function StyledMoodTracker() {
             initial="hidden"
             animate="visible"
         >
-            {/* Éléments décoratifs */}
-            <div className="absolute -right-12 -top-12 w-32 h-32 bg-yellow-300 rounded-full opacity-30" />
-            <div className="absolute -left-12 -bottom-12 w-40 h-40 bg-pink-400 rounded-full opacity-20" />
-
-
-            {/* Info sur l'humeur dominante */}
-            <motion.div
-                className="flex justify-center items-center mb-8"
-                variants={itemVariants}
-            >
-                <div className="bg-yellow-300 p-3 transform border-2 border-black text-center">
-                    <h3 className="font-bold text-sm">
-                        HUMEUR DOMINANTE: {dominantMood.emoji} {dominantMood.label.toUpperCase()}
-                    </h3>
-                </div>
-            </motion.div>
-
-
             {/* Contrôles de période */}
             <motion.div className="flex justify-center mb-6" variants={itemVariants}>
                 <motion.button
@@ -237,7 +428,7 @@ export default function StyledMoodTracker() {
                     whileTap={{ scale: 0.95 }}
                     onClick={() => setTimespan("week")}
                     className={`px-4 py-2 mx-2 font-black text-sm border-3 border-black 
-            ${timespan === "week" ? "bg-pink-400 text-black" : "bg-white"}`}
+                    ${timespan === "week" ? "bg-pink-400 text-black" : "bg-white"}`}
                 >
                     7 DERNIERS JOURS
                 </motion.button>
@@ -246,7 +437,7 @@ export default function StyledMoodTracker() {
                     whileTap={{ scale: 0.95 }}
                     onClick={() => setTimespan("month")}
                     className={`px-4 py-2 mx-2 font-black text-sm border-3 border-black 
-            ${timespan === "month" ? "bg-blue-400 text-black" : "bg-white"}`}
+                    ${timespan === "month" ? "bg-blue-400 text-black" : "bg-white"}`}
                 >
                     30 DERNIERS JOURS
                 </motion.button>
@@ -255,69 +446,161 @@ export default function StyledMoodTracker() {
                     whileTap={{ scale: 0.95 }}
                     onClick={() => setTimespan("year")}
                     className={`px-4 py-2 mx-2 font-black text-sm border-3 border-black 
-            ${timespan === "year" ? "bg-yellow-400 text-black" : "bg-white"}`}
+                    ${timespan === "year" ? "bg-yellow-400 text-black" : "bg-white"}`}
                 >
                     ANNÉE COMPLÈTE
                 </motion.button>
             </motion.div>
 
-            {/* Graphique stylisé */}
+            {/* Info sur l'humeur dominante */}
             <motion.div
-                className="relative h-64 mt-12 mb-8 border-b-4 border-l-4 border-black pl-2"
+                className="flex justify-center items-center mb-8"
                 variants={itemVariants}
             >
-                {/* Légende axe vertical */}
-                <div className="absolute -left-16 top-1/2 transform -rotate-90 origin-center">
-                    <p className="font-bold text-sm">NIVEAU DE GÉNIE ÉMOTIONNEL</p>
+                <div className="bg-yellow-300 p-3 transform border-2 border-black text-center">
+                    <h3 className="font-bold text-sm">
+                        PLANÈTE DOMINANTE: {periodDominantMood.emoji} {periodDominantMood.label.toUpperCase()}
+                    </h3>
                 </div>
+            </motion.div>
 
-                {/* Barres du graphique */}
-                <div className="flex items-end h-full pl-2 space-x-1 relative">
-                    {chartData.map((day, index) => (
+            {/* Visualisation Cosmos des humeurs */}
+            <motion.div 
+                className="relative h-96 bg-gray-900 border-3 border-black overflow-hidden mb-8"
+                variants={itemVariants}
+            >
+                {/* Background stars */}
+                {Array.from({ length: 100 }).map((_, i) => (
+                    <motion.div
+                        key={i}
+                        className="absolute bg-white rounded-full"
+                        style={{
+                            width: Math.random() < 0.2 ? '3px' : '1px',
+                            height: Math.random() < 0.2 ? '3px' : '1px',
+                            left: `${Math.random() * 100}%`,
+                            top: `${Math.random() * 100}%`,
+                            opacity: Math.random() * 0.8 + 0.2
+                        }}
+                        animate={{
+                            opacity: [0.2, 1, 0.2],
+                            scale: [1, 1.2, 1]
+                        }}
+                        transition={{
+                            duration: 2 + Math.random() * 3,
+                            repeat: Infinity,
+                            delay: Math.random() * 2
+                        }}
+                    />
+                ))}
+
+                {/* Mood planets - placement adaptatif selon le nombre et le type de périodes */}
+                {filteredSummaries.map((summary, index) => {
+                    // Calculer la position en fonction du nombre d'éléments
+                    const total = filteredSummaries.length;
+                    const columns = Math.min(Math.ceil(Math.sqrt(total)), 5);
+                    const rows = Math.ceil(total / columns);
+                    
+                    const col = index % columns;
+                    const row = Math.floor(index / columns);
+                    
+                    // Calculs des positions avec espacement
+                    const xPos = 10 + (col * (80 / (columns === 1 ? 1 : columns - 1)));
+                    const yPos = 10 + (row * (80 / (rows === 1 ? 1 : rows - 1)));
+                    
+                    // Taille proportionnelle au nombre d'entrées
+                    const size = getBubbleSize(summary.totalEntries);
+                    
+                    return (
                         <motion.div
-                            key={`${day.date}-${index}`}
-                            className="flex flex-col items-center flex-1"
-                            initial={{ opacity: 0, y: 50 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: index * 0.03 }}
+                            key={summary.date}
+                            className={`absolute ${getPeriodColor(summary)} border-2 border-black rounded-full flex items-center justify-center cursor-pointer`}
+                            style={{
+                                width: `${size}px`,
+                                height: `${size}px`,
+                                left: `${xPos}%`,
+                                top: `${yPos}%`,
+                            }}
+                            whileHover={{
+                                scale: 1.1,
+                                boxShadow: "0 0 20px rgba(255,255,255,0.6)"
+                            }}
+                            onClick={() => setSelectedPeriod(summary)}
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            transition={{ 
+                                type: "spring", 
+                                delay: index * 0.05 
+                            }}
                         >
-                            <motion.div
-                                className={`w-full ${day.mood.color} border-2 border-black relative group`}
-                                style={{ height: calculateMoodHeight(day.mood) }}
-                                whileHover={{
-                                    scale: 1.1,
-                                    boxShadow: "3px 3px 0px rgba(0,0,0,0.8)"
-                                }}
-                            >
-                                {/* Emoji flottant au-dessus de la barre */}
-                                <motion.div
-                                    className="absolute -top-10 left-1/2 transform -translate-x-1/2 text-2xl"
-                                    animate={{
-                                        y: [0, -5, 0, -5, 0],
-                                        rotate: [0, 5, 0, -5, 0]
-                                    }}
-                                    transition={{ repeat: Infinity, duration: 2 }}
-                                >
-                                    {day.mood.emoji}
-                                </motion.div>
-
-                                {/* Info-bulle au survol */}
-                                <div className="hidden group-hover:block absolute -top-24 left-1/2 transform -translate-x-1/2 bg-white border-2 border-black p-2 z-10 w-32">
-                                    <p className="text-xs font-bold">{day.date}</p>
-                                    <p className="text-xs">{day.mood.label}</p>
-                                    <p className="text-xs">{day.wordCount} mots</p>
+                            <div className="text-center">
+                                <div className="text-2xl">{summary.dominantMood.emoji}</div>
+                                <div className="text-xs font-bold text-black">
+                                    {summary.periodType === "month" 
+                                        ? new Date(summary.date).toLocaleDateString('fr-FR', { month: 'short' })
+                                        : formatDate(summary.date, "short")}
                                 </div>
-                            </motion.div>
-
-                            {/* Date sous la barre (pour les périodes courtes) */}
-                            {(timespan === "week" || chartData.length < 10) && (
-                                <p className="text-xs mt-2 transform -rotate-45 origin-top-left whitespace-nowrap">
-                                    {day.date.split('/').slice(0, 2).join('/')}
-                                </p>
-                            )}
+                            </div>
                         </motion.div>
-                    ))}
-                </div>
+                    );
+                })}
+
+                {/* Détails de la période sélectionnée */}
+                {selectedPeriod && (
+                    <motion.div
+                        className="absolute bottom-0 left-0 right-0 bg-white border-t-3 border-black p-4"
+                        initial={{ y: 100 }}
+                        animate={{ y: 0 }}
+                        exit={{ y: 100 }}
+                    >
+                        <div className="flex justify-between items-center mb-2">
+                            <div>
+                                <h3 className="font-bold text-lg">
+                                    {getPeriodLabel(selectedPeriod)} {selectedPeriod.dominantMood.emoji}
+                                </h3>
+                                <p className="text-sm">
+                                    {selectedPeriod.totalEntries} entrée{selectedPeriod.totalEntries > 1 ? 's' : ''} · {selectedPeriod.totalWords} mots
+                                </p>
+                            </div>
+                            <div className="flex space-x-2">
+                                {Object.entries(selectedPeriod.moods).map(([mood, count]) => {
+                                    const moodObj = getMoodByValue(mood) || MOODS[2];
+                                    return (
+                                        <div key={mood} className="flex items-center">
+                                            <span className="text-lg mr-1">{moodObj.emoji}</span>
+                                            <span className="text-xs">×{count}</span>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                            <motion.button
+                                className="bg-black text-white px-3 py-1 text-xs font-bold"
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                onClick={() => setSelectedPeriod(null)}
+                            >
+                                FERMER
+                            </motion.button>
+                        </div>
+
+                        {/* Détail quotidien pour les semaines */}
+                        {selectedPeriod.periodType === "week" && selectedPeriod.dailyMoods && (
+                            <div className="mt-2 pt-2 border-t border-gray-300">
+                                <h4 className="text-sm font-bold mb-2">Détail par jour</h4>
+                                <div className="flex justify-between">
+                                    {selectedPeriod.dailyMoods.map(day => (
+                                        <div key={day.date} className="flex flex-col items-center">
+                                            <div className={`w-10 h-10 ${day.dominantMood.color} rounded-full flex items-center justify-center border border-black`}>
+                                                <span>{day.dominantMood.emoji}</span>
+                                            </div>
+                                            <span className="text-xs mt-1">{new Date(day.date).toLocaleDateString('fr-FR', { weekday: 'short' })}</span>
+                                            <span className="text-xs">{day.entries > 1 ? `${day.entries} entrées` : '1 entrée'}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </motion.div>
+                )}
             </motion.div>
 
             {/* Légende des humeurs */}
@@ -326,7 +609,7 @@ export default function StyledMoodTracker() {
                 variants={itemVariants}
             >
                 <div className="bg-black p-2 transform">
-                    <div className="flex space-x-4">
+                    <div className="flex flex-wrap justify-center gap-4">
                         {MOODS.map(mood => (
                             <div key={mood.value} className="flex items-center">
                                 <span className="mr-1 text-lg">{mood.emoji}</span>
