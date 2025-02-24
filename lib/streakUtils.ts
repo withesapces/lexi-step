@@ -25,9 +25,50 @@ export async function getStreakData(prisma: Prisma.TransactionClient, userId: st
 }
 
 /**
+ * Vérifie si l'utilisateur a atteint son objectif journalier
+ */
+async function hasReachedDailyGoal(prisma: Prisma.TransactionClient, userId: string): Promise<boolean> {
+  // Récupérer l'objectif quotidien de l'utilisateur
+  const userSettings = await prisma.userSettings.findUnique({
+    where: { userId }
+  });
+  
+  const dailyWordGoal = userSettings?.dailyWordGoal || 200; // Valeur par défaut si non définie
+  
+  // Récupérer le nombre total de mots écrits aujourd'hui
+  const today = startOfDay(new Date());
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  
+  const dailyEntries = await prisma.writingEntry.findMany({
+    where: {
+      userId,
+      createdAt: {
+        gte: today,
+        lt: tomorrow
+      }
+    }
+  });
+  
+  // Calculer le nombre total de mots écrits aujourd'hui
+  const totalWordsToday = dailyEntries.reduce((total, entry) => total + entry.wordCount, 0);
+  
+  // Vérifier si l'objectif est atteint
+  return totalWordsToday >= dailyWordGoal;
+}
+
+/**
  * Met à jour la streak d'un utilisateur après une nouvelle entrée d'écriture
  */
 export async function updateUserStreak(prisma: Prisma.TransactionClient, userId: string) {
+  // Vérifier si l'utilisateur a atteint son objectif journalier
+  const goalReached = await hasReachedDailyGoal(prisma, userId);
+  
+  // Si l'objectif n'est pas atteint, ne pas mettre à jour la streak
+  if (!goalReached) {
+    return await getStreakData(prisma, userId);
+  }
+  
   // Récupérer la streak actuelle
   const streak = await getStreakData(prisma, userId);
   const today = startOfDay(new Date());
