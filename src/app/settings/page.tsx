@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import Navbar from "../components/Navbar";
 import Moodboard from "../components/moodboard";
 import BadgeGallery from "../components/BadgeGallery";
+import StyledMoodTracker from "../components/moodboard";
 
 export default function ProfilePage() {
   const { data: session, status } = useSession();
@@ -170,7 +171,7 @@ export default function ProfilePage() {
               }}
               className={`absolute w-4 h-4 ${["bg-pink-500", "bg-blue-500", "bg-green-500", "bg-yellow-500"][
                 Math.floor(Math.random() * 4)
-                ]
+              ]
                 }`}
             />
           ))}
@@ -398,7 +399,7 @@ export default function ProfilePage() {
               </span>
             </h2>
 
-            <Moodboard />
+            <StyledMoodTracker />
           </motion.div>
         </section>
 

@@ -248,7 +248,7 @@ export default function StyledMoodTracker() {
     // État de chargement stylisé
     if (loading) {
         return (
-            <div className="h-64 flex items-center justify-center bg-yellow-300 border-4 border-black" style={{ boxShadow: "6px 6px 0px #000" }}>
+            <div className="min-h-[500px] flex items-center justify-center">
                 <motion.div
                     className="text-xl font-black bg-black text-white px-6 py-3"
                     animate={{
@@ -347,17 +347,13 @@ export default function StyledMoodTracker() {
     // Si aucune donnée n'est disponible pour la période sélectionnée
     if (filteredSummaries.length === 0) {
         return (
-            <div className="p-6 bg-white border-4 border-black relative" style={{ boxShadow: "8px 8px 0px #000" }}>
-                <h2 className="text-3xl font-black transform -rotate-2 bg-black text-yellow-300 inline-block px-4 py-2 mb-6">
-                    💡 COSMOS ÉMOTIONNEL
-                </h2>
-
-                <div className="flex justify-center mb-6">
+            <div className="max-w-5xl mx-auto">
+                <div className="flex justify-center mb-8">
                     <motion.button
                         whileHover={{ scale: 1.05, rotate: 1 }}
                         whileTap={{ scale: 0.95 }}
                         onClick={() => setTimespan("week")}
-                        className={`px-4 py-2 mx-2 font-black text-sm border-3 border-black 
+                        className={`px-4 py-2 mx-2 font-black text-sm border-2 border-black 
               ${timespan === "week" ? "bg-pink-400 text-black" : "bg-white"}`}
                     >
                         7 DERNIERS JOURS
@@ -366,7 +362,7 @@ export default function StyledMoodTracker() {
                         whileHover={{ scale: 1.05, rotate: -1 }}
                         whileTap={{ scale: 0.95 }}
                         onClick={() => setTimespan("month")}
-                        className={`px-4 py-2 mx-2 font-black text-sm border-3 border-black 
+                        className={`px-4 py-2 mx-2 font-black text-sm border-2 border-black 
               ${timespan === "month" ? "bg-blue-400 text-black" : "bg-white"}`}
                     >
                         30 DERNIERS JOURS
@@ -375,16 +371,16 @@ export default function StyledMoodTracker() {
                         whileHover={{ scale: 1.05, rotate: 1 }}
                         whileTap={{ scale: 0.95 }}
                         onClick={() => setTimespan("year")}
-                        className={`px-4 py-2 mx-2 font-black text-sm border-3 border-black 
+                        className={`px-4 py-2 mx-2 font-black text-sm border-2 border-black 
               ${timespan === "year" ? "bg-yellow-400 text-black" : "bg-white"}`}
                     >
                         ANNÉE COMPLÈTE
                     </motion.button>
                 </div>
 
-                <div className="text-center py-10 bg-yellow-100 border-3 border-black">
+                <div className="text-center py-20 bg-yellow-100 border-2 border-black max-w-3xl mx-auto">
                     <motion.p
-                        className="text-2xl font-black mb-4 transform -rotate-2"
+                        className="text-3xl font-black mb-6 transform -rotate-2"
                         animate={{
                             scale: [1, 1.05, 1],
                             rotate: [-2, -1, -2]
@@ -394,7 +390,7 @@ export default function StyledMoodTracker() {
                         TON UNIVERS ÉMOTIONNEL EST VIDE
                     </motion.p>
                     <motion.div
-                        className="text-6xl mx-auto"
+                        className="text-8xl mx-auto"
                         animate={{
                             rotate: [0, 10, 0, -10, 0],
                             scale: [1, 1.1, 1, 1.1, 1]
@@ -403,7 +399,7 @@ export default function StyledMoodTracker() {
                     >
                         🚀
                     </motion.div>
-                    <p className="mt-4 font-bold bg-black text-white inline-block px-6 py-2 transform rotate-1">
+                    <p className="mt-6 font-bold bg-black text-white inline-block px-6 py-2 transform rotate-1">
                         Écris quelque chose pour créer ton cosmos émotionnel!
                     </p>
                 </div>
@@ -415,19 +411,18 @@ export default function StyledMoodTracker() {
 
     return (
         <motion.div
-            className="p-6 bg-white border-4 border-black relative overflow-hidden"
-            style={{ boxShadow: "8px 8px 0px #000" }}
+            className="max-w-5xl mx-auto"
             variants={containerVariants}
             initial="hidden"
             animate="visible"
         >
             {/* Contrôles de période */}
-            <motion.div className="flex justify-center mb-6" variants={itemVariants}>
+            <motion.div className="flex justify-center mb-8" variants={itemVariants}>
                 <motion.button
                     whileHover={{ scale: 1.05, rotate: 1 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => setTimespan("week")}
-                    className={`px-4 py-2 mx-2 font-black text-sm border-3 border-black 
+                    className={`px-6 py-3 mx-2 font-black text-sm border-2 border-black 
                     ${timespan === "week" ? "bg-pink-400 text-black" : "bg-white"}`}
                 >
                     7 DERNIERS JOURS
@@ -436,7 +431,7 @@ export default function StyledMoodTracker() {
                     whileHover={{ scale: 1.05, rotate: -1 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => setTimespan("month")}
-                    className={`px-4 py-2 mx-2 font-black text-sm border-3 border-black 
+                    className={`px-6 py-3 mx-2 font-black text-sm border-2 border-black 
                     ${timespan === "month" ? "bg-blue-400 text-black" : "bg-white"}`}
                 >
                     30 DERNIERS JOURS
@@ -445,7 +440,7 @@ export default function StyledMoodTracker() {
                     whileHover={{ scale: 1.05, rotate: 1 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => setTimespan("year")}
-                    className={`px-4 py-2 mx-2 font-black text-sm border-3 border-black 
+                    className={`px-6 py-3 mx-2 font-black text-sm border-2 border-black 
                     ${timespan === "year" ? "bg-yellow-400 text-black" : "bg-white"}`}
                 >
                     ANNÉE COMPLÈTE
@@ -457,8 +452,8 @@ export default function StyledMoodTracker() {
                 className="flex justify-center items-center mb-8"
                 variants={itemVariants}
             >
-                <div className="bg-yellow-300 p-3 transform border-2 border-black text-center">
-                    <h3 className="font-bold text-sm">
+                <div className="bg-yellow-300 p-4 transform rotate-1 border-2 border-black text-center">
+                    <h3 className="font-bold text-lg">
                         PLANÈTE DOMINANTE: {periodDominantMood.emoji} {periodDominantMood.label.toUpperCase()}
                     </h3>
                 </div>
@@ -466,11 +461,11 @@ export default function StyledMoodTracker() {
 
             {/* Visualisation Cosmos des humeurs */}
             <motion.div 
-                className="relative h-96 bg-gray-900 border-3 border-black overflow-hidden mb-8"
+                className="relative h-[600px] bg-gray-900 border-2 border-black overflow-hidden mb-10"
                 variants={itemVariants}
             >
                 {/* Background stars */}
-                {Array.from({ length: 100 }).map((_, i) => (
+                {Array.from({ length: 150 }).map((_, i) => (
                     <motion.div
                         key={i}
                         className="absolute bg-white rounded-full"
@@ -547,33 +542,33 @@ export default function StyledMoodTracker() {
                 {/* Détails de la période sélectionnée */}
                 {selectedPeriod && (
                     <motion.div
-                        className="absolute bottom-0 left-0 right-0 bg-white border-t-3 border-black p-4"
+                        className="absolute bottom-0 left-0 right-0 bg-white border-t-2 border-black p-6"
                         initial={{ y: 100 }}
                         animate={{ y: 0 }}
                         exit={{ y: 100 }}
                     >
-                        <div className="flex justify-between items-center mb-2">
+                        <div className="flex justify-between items-center mb-3">
                             <div>
-                                <h3 className="font-bold text-lg">
+                                <h3 className="font-bold text-xl">
                                     {getPeriodLabel(selectedPeriod)} {selectedPeriod.dominantMood.emoji}
                                 </h3>
                                 <p className="text-sm">
                                     {selectedPeriod.totalEntries} entrée{selectedPeriod.totalEntries > 1 ? 's' : ''} · {selectedPeriod.totalWords} mots
                                 </p>
                             </div>
-                            <div className="flex space-x-2">
+                            <div className="flex space-x-3">
                                 {Object.entries(selectedPeriod.moods).map(([mood, count]) => {
                                     const moodObj = getMoodByValue(mood) || MOODS[2];
                                     return (
                                         <div key={mood} className="flex items-center">
-                                            <span className="text-lg mr-1">{moodObj.emoji}</span>
-                                            <span className="text-xs">×{count}</span>
+                                            <span className="text-xl mr-1">{moodObj.emoji}</span>
+                                            <span className="text-sm">×{count}</span>
                                         </div>
                                     );
                                 })}
                             </div>
                             <motion.button
-                                className="bg-black text-white px-3 py-1 text-xs font-bold"
+                                className="bg-black text-white px-4 py-2 text-sm font-bold"
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
                                 onClick={() => setSelectedPeriod(null)}
@@ -584,15 +579,15 @@ export default function StyledMoodTracker() {
 
                         {/* Détail quotidien pour les semaines */}
                         {selectedPeriod.periodType === "week" && selectedPeriod.dailyMoods && (
-                            <div className="mt-2 pt-2 border-t border-gray-300">
-                                <h4 className="text-sm font-bold mb-2">Détail par jour</h4>
+                            <div className="mt-4 pt-3 border-t border-gray-300">
+                                <h4 className="text-sm font-bold mb-4">Détail par jour</h4>
                                 <div className="flex justify-between">
                                     {selectedPeriod.dailyMoods.map(day => (
                                         <div key={day.date} className="flex flex-col items-center">
-                                            <div className={`w-10 h-10 ${day.dominantMood.color} rounded-full flex items-center justify-center border border-black`}>
-                                                <span>{day.dominantMood.emoji}</span>
+                                            <div className={`w-12 h-12 ${day.dominantMood.color} rounded-full flex items-center justify-center border border-black`}>
+                                                <span className="text-xl">{day.dominantMood.emoji}</span>
                                             </div>
-                                            <span className="text-xs mt-1">{new Date(day.date).toLocaleDateString('fr-FR', { weekday: 'short' })}</span>
+                                            <span className="text-sm mt-2">{new Date(day.date).toLocaleDateString('fr-FR', { weekday: 'short' })}</span>
                                             <span className="text-xs">{day.entries > 1 ? `${day.entries} entrées` : '1 entrée'}</span>
                                         </div>
                                     ))}
@@ -605,15 +600,15 @@ export default function StyledMoodTracker() {
 
             {/* Légende des humeurs */}
             <motion.div
-                className="flex justify-center mt-6 mb-4"
+                className="flex justify-center mt-8 mb-4"
                 variants={itemVariants}
             >
-                <div className="bg-black p-2 transform">
-                    <div className="flex flex-wrap justify-center gap-4">
+                <div className="bg-black p-4 transform rotate-1">
+                    <div className="flex flex-wrap justify-center gap-6">
                         {MOODS.map(mood => (
                             <div key={mood.value} className="flex items-center">
-                                <span className="mr-1 text-lg">{mood.emoji}</span>
-                                <span className="text-xs text-white font-bold">{mood.label}</span>
+                                <span className="mr-2 text-2xl">{mood.emoji}</span>
+                                <span className="text-sm text-white font-bold">{mood.label}</span>
                             </div>
                         ))}
                     </div>
