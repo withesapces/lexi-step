@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
+import { hasReachedDailyGoal, updateUserStreak } from "@/lib/streakUtils";
 
 export async function GET() {
   try {
@@ -91,6 +92,18 @@ export async function POST(request: Request) {
       create: {
         userId: user.id,
         dailyWordGoal
+      }
+    });
+    
+    // Après la mise à jour de l'objectif, vérifier si l'utilisateur atteint maintenant son objectif
+    // et mettre à jour la streak si nécessaire
+    await prisma.$transaction(async (tx) => {
+      // Vérifier si avec le nouvel objectif, l'utilisateur a atteint son objectif aujourd'hui
+      const goalReached = await hasReachedDailyGoal(tx, user.id);
+      
+      if (goalReached) {
+        // Si l'objectif est maintenant atteint, mettre à jour la streak
+        await updateUserStreak(tx, user.id);
       }
     });
     

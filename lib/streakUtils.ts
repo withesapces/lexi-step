@@ -26,8 +26,9 @@ export async function getStreakData(prisma: Prisma.TransactionClient, userId: st
 
 /**
  * Vérifie si l'utilisateur a atteint son objectif journalier
+ * Exportée pour pouvoir être utilisée dans d'autres parties de l'application
  */
-async function hasReachedDailyGoal(prisma: Prisma.TransactionClient, userId: string): Promise<boolean> {
+export async function hasReachedDailyGoal(prisma: Prisma.TransactionClient, userId: string): Promise<boolean> {
   // Récupérer l'objectif quotidien de l'utilisateur
   const userSettings = await prisma.userSettings.findUnique({
     where: { userId }

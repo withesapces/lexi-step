@@ -76,9 +76,25 @@ export default function ProfilePage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ dailyWordGoal: dailyGoal }),
       });
+      
       if (res.ok) {
+        // Afficher l'animation de confetti
         setShowConfetti(true);
         setTimeout(() => setShowConfetti(false), 3000);
+        
+        // Actualiser les statistiques après la mise à jour des paramètres
+        // car la streak a peut-être été mise à jour
+        const statsRes = await fetch("/api/user/stats");
+        if (statsRes.ok) {
+          const stats = await statsRes.json();
+          setUserStats({
+            streak: stats.currentStreak,
+            totalWords: stats.total,
+            today: stats.today,
+            week: stats.week,
+            month: stats.month
+          });
+        }
       }
     } catch (error) {
       console.error("Erreur lors de la sauvegarde des réglages:", error);
