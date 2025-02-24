@@ -4,6 +4,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getStreakData, updateUserStreak } from "@/lib/streakUtils";
+import { checkAndAwardBadges } from "@/lib/badgeService";
 
 export async function GET(req: NextRequest) {
   try {
@@ -92,7 +93,7 @@ export async function POST(req: NextRequest) {
     }
     
     // Créer une nouvelle entrée d'écriture avec transaction pour garantir l'intégrité
-    const newEntry = await prisma.$transaction(async (tx) => {
+    const result = await prisma.$transaction(async (tx) => {
       // 1. Créer l'entrée d'écriture principale
       const writingEntry = await tx.writingEntry.create({
         data: {
@@ -115,16 +116,25 @@ export async function POST(req: NextRequest) {
       // 3. Mettre à jour la streak de l'utilisateur
       await updateUserStreak(tx, user.id);
       
+      // 4. Vérifier et attribuer de nouveaux badges
+      const newBadges = await checkAndAwardBadges(tx, user.id, wordCount);
+      
       return {
         id: freeWritingEntry.id,
-        writingEntryId: writingEntry.id
+        writingEntryId: writingEntry.id,
+        newBadges // Ajouter les nouveaux badges à la réponse
       };
     });
     
+    // Vérifier si de nouveaux badges ont été attribués
+    const newBadgesEarned = result.newBadges && result.newBadges.length > 0;
+    
     return NextResponse.json({ 
       success: true,
-      id: newEntry.id,
-      message: "Entrée d'écriture libre créée avec succès"
+      id: result.id,
+      message: "Entrée d'écriture libre créée avec succès",
+      newBadges: newBadgesEarned ? result.newBadges : undefined,
+      badgesEarned: newBadgesEarned // Indicateur si des badges ont été gagnés
     });
     
   } catch (error) {

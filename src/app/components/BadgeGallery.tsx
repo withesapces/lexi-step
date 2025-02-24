@@ -1,5 +1,3 @@
-// /src/components/BadgeGallery.tsx
-
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -19,12 +17,10 @@ type CategoryBadges = {
 };
 
 const BadgeGallery = ({ badges }: { badges: Badge[] }) => {
-  // Créer les catégories à partir des badges récupérés de la BDD
+  // Création des catégories à partir des badges
   const getBadgeCategories = (): CategoryBadges[] => {
-    // Récupérer toutes les catégories uniques des badges
     const categories = new Set(badges.map(badge => badge.category || "Autres"));
     
-    // Mapper les icônes aux catégories (en fonction de votre logique métier)
     const categoryIcons: Record<string, string> = {
       "streak": "🔥",
       "words_total": "✍️",
@@ -35,13 +31,11 @@ const BadgeGallery = ({ badges }: { badges: Badge[] }) => {
       "Autres": "🏆"
     };
     
-    // Créer les groupes de badges par catégorie
     return Array.from(categories).map(category => ({
       name: category,
       icon: categoryIcons[category] || "🏆",
       badges: badges.filter(badge => (badge.category || "Autres") === category)
     })).sort((a, b) => {
-      // Mettre la catégorie "Autres" à la fin
       if (a.name === "Autres") return 1;
       if (b.name === "Autres") return -1;
       return a.name.localeCompare(b.name);
@@ -50,37 +44,19 @@ const BadgeGallery = ({ badges }: { badges: Badge[] }) => {
 
   const categories = getBadgeCategories();
   const [activeCategory, setActiveCategory] = useState<string>(categories[0]?.name || "");
-  const [filter, setFilter] = useState<"all" | "earned" | "locked">("all");
-  
+
   // État pour la pagination
   const [currentPage, setCurrentPage] = useState(1);
   const badgesPerPage = 6; // Nombre de badges par page
 
-  const filteredBadges = (categoryBadges: Badge[]) => {
-    switch (filter) {
-      case "earned":
-        return categoryBadges.filter(badge => badge.earned);
-      case "locked":
-        return categoryBadges.filter(badge => !badge.earned);
-      default:
-        return categoryBadges;
-    }
-  };
-
-  // Compteur de badges débloqués
-  const earnedCount = badges.filter(badge => badge.earned).length;
-  const totalBadges = badges.length;
-  const progressPercentage = Math.round((earnedCount / totalBadges) * 100);
-
-  // Obtenir les badges actuels pour la pagination
+  // Utiliser directement la liste des badges sans filtre
   const getCurrentBadges = (badges: Badge[]) => {
-    const filteredBadgesList = filteredBadges(badges);
     const indexOfLastBadge = currentPage * badgesPerPage;
     const indexOfFirstBadge = indexOfLastBadge - badgesPerPage;
-    return filteredBadgesList.slice(indexOfFirstBadge, indexOfLastBadge);
+    return badges.slice(indexOfFirstBadge, indexOfLastBadge);
   };
 
-  // Calculer le nombre total de pages pour la catégorie active
+  // Obtenir la catégorie active
   const getCurrentCategory = () => {
     return categories.find(cat => cat.name === activeCategory);
   };
@@ -88,17 +64,15 @@ const BadgeGallery = ({ badges }: { badges: Badge[] }) => {
   const totalPages = () => {
     const currentCategory = getCurrentCategory();
     if (!currentCategory) return 1;
-    
-    const filteredBadgesList = filteredBadges(currentCategory.badges);
-    return Math.ceil(filteredBadgesList.length / badgesPerPage);
+    return Math.ceil(currentCategory.badges.length / badgesPerPage);
   };
 
-  // Réinitialiser la page à 1 lorsque la catégorie ou le filtre change
+  // Réinitialiser la page à 1 lorsque la catégorie change
   React.useEffect(() => {
     setCurrentPage(1);
-  }, [activeCategory, filter]);
+  }, [activeCategory]);
 
-  // Fonction pour traduire les noms de catégories pour l'affichage
+  // Traduction des noms de catégories pour l'affichage
   const translateCategoryName = (categoryName: string): string => {
     const translations: Record<string, string> = {
       "streak": "Régularité",
@@ -112,6 +86,11 @@ const BadgeGallery = ({ badges }: { badges: Badge[] }) => {
     
     return translations[categoryName] || categoryName;
   };
+
+  // Calcul de la progression globale
+  const earnedCount = badges.filter(badge => badge.earned).length;
+  const totalBadges = badges.length;
+  const progressPercentage = Math.round((earnedCount / totalBadges) * 100);
 
   return (
     <div className="w-full">
@@ -134,25 +113,6 @@ const BadgeGallery = ({ badges }: { badges: Badge[] }) => {
               </span>
             )}
           </div>
-        </div>
-      </div>
-
-      {/* Filtres */}
-      <div className="flex justify-between items-center mb-6">
-        <div className="flex space-x-2">
-          {["all", "earned", "locked"].map((option) => (
-            <button
-              key={option}
-              onClick={() => setFilter(option as "all" | "earned" | "locked")}
-              className={`px-4 py-2 font-bold border-2 border-black transform ${
-                filter === option
-                  ? "bg-black text-white rotate-0"
-                  : "bg-white text-black hover:bg-yellow-300 -rotate-1"
-              }`}
-            >
-              {option === "all" ? "TOUS" : option === "earned" ? "DÉBLOQUÉS" : "À DÉBLOQUER"}
-            </button>
-          ))}
         </div>
       </div>
 
@@ -183,7 +143,7 @@ const BadgeGallery = ({ badges }: { badges: Badge[] }) => {
       {/* Affichage des badges */}
       <AnimatePresence mode="wait">
         <motion.div
-          key={activeCategory + filter + currentPage}
+          key={activeCategory + currentPage}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
@@ -198,13 +158,9 @@ const BadgeGallery = ({ badges }: { badges: Badge[] }) => {
               
               return (
                 <div key={category.name} className="space-y-6">
-                  {filteredBadges(category.badges).length === 0 ? (
+                  {category.badges.length === 0 ? (
                     <div className="text-center py-8 border-4 border-dashed border-black bg-gray-100">
-                      <p className="text-xl font-black">
-                        {filter === "earned" ? "PAS ENCORE DE BADGE DÉBLOQUÉ DANS CETTE CATÉGORIE" : 
-                         filter === "locked" ? "TOUS LES BADGES SONT DÉBLOQUÉS DANS CETTE CATÉGORIE!" : 
-                         "AUCUN BADGE DANS CETTE CATÉGORIE"}
-                      </p>
+                      <p className="text-xl font-black">AUCUN BADGE DANS CETTE CATÉGORIE</p>
                     </div>
                   ) : (
                     <>
