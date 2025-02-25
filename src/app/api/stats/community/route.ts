@@ -34,8 +34,8 @@ export async function GET() {
             }
         });
 
-        // Get number of users who wrote in the last 15 minutes (considered "online")
-        const fifteenMinutesAgo = new Date(Date.now() - 15 * 60 * 1000);
+        // Get number of users who wrote in the last 60 minutes (considered "online")
+        const fifteenMinutesAgo = new Date(Date.now() - 60 * 60 * 1000);
         const onlineUsers = await prisma.writingEntry.findMany({
             where: {
                 createdAt: {
