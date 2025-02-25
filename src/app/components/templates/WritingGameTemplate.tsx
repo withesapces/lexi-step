@@ -25,8 +25,6 @@ export interface GameConfig {
   dailyWordGoalDefault: number;
   minWordsToSave: number;
   saveButtonText: string;
-  entriesListTitle: string;
-  emptyEntriesText: string;
   successToastText: string;
   getProgressMessage: (current: number, goal: number) => string;
 }
@@ -349,55 +347,6 @@ export default function WritingGameTemplate({
                 config.saveButtonText
               )}
             </motion.button>
-          </motion.div>
-
-          {/* Previous Entries */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="mb-10"
-          >
-            <h3 className={`font-bold mb-4 text-center ${darkMode ? "text-teal-300" : "text-black"}`}>{config.entriesListTitle}</h3>
-            
-            {isLoading ? (
-              <div className="flex justify-center p-8">
-                <svg className="animate-spin h-10 w-10 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-              </div>
-            ) : entries.length === 0 ? (
-              <div className={`text-center p-6 ${darkMode ? "bg-gray-800" : "bg-white"} border-2 ${darkMode ? "border-teal-600" : "border-black"}`}>
-                <p className="font-bold mb-2">Pas encore de créations sauvegardées.</p>
-                <p>{config.emptyEntriesText}</p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {entries.map((entry, index) => (
-                  <motion.div
-                    key={entry.id || index}
-                    className={`p-4 ${darkMode ? "bg-gray-800 border-teal-600" : "bg-white border-black"} border-2 transform ${index % 2 === 0 ? "rotate-2" : "-rotate-2"}`}
-                    whileHover={{ scale: 1.03, rotate: 0 }}
-                  >
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="font-bold">{entry.date}</span>
-                    </div>
-                    <p className={`text-sm ${darkMode ? "text-gray-300" : "text-gray-700"}`}>
-                      {entry.preview}
-                    </p>
-                    <div className="flex justify-between items-center mt-2">
-                      <span className={`text-xs ${darkMode ? "text-gray-400" : "text-gray-500"}`}>
-                        {entry.wordCount} mots
-                      </span>
-                      <button className={`text-sm font-bold ${darkMode ? "text-teal-400" : "text-teal-600"}`}>
-                        Lire plus...
-                      </button>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            )}
           </motion.div>
 
           {/* Mode Switch */}
