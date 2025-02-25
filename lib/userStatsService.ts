@@ -75,12 +75,12 @@ export async function getUserWritingStats(prisma: PrismaClient, userId: string) 
   });
   
   return {
-    today: todayStats._sum.wordCount || 0,
-    week: weekStats._sum.wordCount || 0,
-    month: monthStats._sum.wordCount || 0,
-    total: totalStats._sum.wordCount || 0,
-    dailyGoal: userSettings?.dailyWordGoal || 200,
-    currentStreak: streakData?.currentStreak || 0,
+    today: todayStats._sum.wordCount || 0, // Le nombre de mots rédigés aujourd'hui
+    week: weekStats._sum.wordCount || 0, // Le nombre de mots rédigés pour la semaine en cours
+    month: monthStats._sum.wordCount || 0, // Le nombre de mots rédigés pour le mois en cours
+    total: totalStats._sum.wordCount || 0, // Le total de mots rédigés depuis le début
+    dailyGoal: userSettings?.dailyWordGoal || 200, // L'objectif de mots 
+    currentStreak: streakData?.currentStreak || 0, // La streak en cours
     longestStreak: streakData?.longestStreak || 0
   };
 }

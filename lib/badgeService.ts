@@ -54,17 +54,9 @@ export async function checkAndAwardBadges(
         }
         break;
         
-      // TODO : Faire ici
       case "session_words":
         // Vérifier si l'utilisateur a écrit le nombre de mots dans une session requis
         if (enhancedStats.currentSubmission >= badge.conditionValue) {
-          awarded = true;
-        }
-        break;
-        
-      case "weekly_goal":
-        // Vérifier si l'utilisateur a écrit le nombre de mots quotidien requis
-        if (stats.week >= badge.conditionValue) {
           awarded = true;
         }
         break;
