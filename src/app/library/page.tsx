@@ -327,28 +327,51 @@ export default function MyLibrary() {
     );
   };
 
-  // Stats rapides en haut
+  // Stats rapides en haut avec placeholders de chargement
   const StatsHeader = () => {
     const totalWords = writings.reduce((sum, writing) => sum + writing.wordCount, 0);
 
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-        <motion.div 
-          whileHover={{ scale: 1.02, rotate: -1 }}
-          className="bg-pink-400 border-4 border-black p-4 text-center"
-          style={{ boxShadow: "5px 5px 0px #000" }}
-        >
-          <div className="text-4xl font-black mb-2">{writings.length}</div>
-          <div className="font-bold">TEXTES</div>
-        </motion.div>
-        <motion.div 
-          whileHover={{ scale: 1.02, rotate: 1 }}
-          className="bg-blue-400 border-4 border-black p-4 text-center"
-          style={{ boxShadow: "5px 5px 0px #000" }}
-        >
-          <div className="text-4xl font-black mb-2">{totalWords.toLocaleString()}</div>
-          <div className="font-bold">MOTS ÉCRITS</div>
-        </motion.div>
+        {loading ? (
+          // Placeholders de chargement pour les stats
+          <>
+            <motion.div 
+              className="bg-white bg-opacity-10 border-4 border-black p-4 text-center animate-pulse"
+              style={{ boxShadow: "5px 5px 0px #000" }}
+            >
+              <div className="h-10 bg-gray-300 mb-2 rounded"></div>
+              <div className="h-6 bg-gray-300 w-1/2 mx-auto rounded"></div>
+            </motion.div>
+            <motion.div 
+              className="bg-white bg-opacity-10 border-4 border-black p-4 text-center animate-pulse"
+              style={{ boxShadow: "5px 5px 0px #000" }}
+            >
+              <div className="h-10 bg-gray-300 mb-2 rounded"></div>
+              <div className="h-6 bg-gray-300 w-1/2 mx-auto rounded"></div>
+            </motion.div>
+          </>
+        ) : (
+          // Stats réelles
+          <>
+            <motion.div 
+              whileHover={{ scale: 1.02, rotate: -1 }}
+              className="bg-pink-400 border-4 border-black p-4 text-center"
+              style={{ boxShadow: "5px 5px 0px #000" }}
+            >
+              <div className="text-4xl font-black mb-2">{writings.length}</div>
+              <div className="font-bold">TEXTES</div>
+            </motion.div>
+            <motion.div 
+              whileHover={{ scale: 1.02, rotate: 1 }}
+              className="bg-blue-400 border-4 border-black p-4 text-center"
+              style={{ boxShadow: "5px 5px 0px #000" }}
+            >
+              <div className="text-4xl font-black mb-2">{totalWords.toLocaleString()}</div>
+              <div className="font-bold">MOTS ÉCRITS</div>
+            </motion.div>
+          </>
+        )}
       </div>
     );
   };
@@ -408,7 +431,7 @@ export default function MyLibrary() {
               <motion.button
                 whileHover={{ scale: 1.05, rotate: 1 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={() => router.push('/new-writing')}
+                onClick={() => router.push('/dashboard')}
                 className="bg-black text-white px-6 py-3 font-black text-lg flex items-center gap-2 whitespace-nowrap"
               >
                 <Plus size={20} />
@@ -416,7 +439,7 @@ export default function MyLibrary() {
               </motion.button>
             </div>
             
-            {/* Filters */}
+            {/* Filtres */}
             <div className="flex flex-wrap gap-3 mt-4">
               <button
                 onClick={() => setSelectedType(null)}
@@ -424,30 +447,17 @@ export default function MyLibrary() {
               >
                 TOUS
               </button>
-              <button
-                onClick={() => setSelectedType("JOURNAL_INTIME")}
-                className={`px-3 py-1 font-black border-2 border-black ${selectedType === "JOURNAL_INTIME" ? 'bg-pink-400' : 'bg-white hover:bg-pink-100'}`}
-              >
-                📔 JOURNAL
-              </button>
-              <button
-                onClick={() => setSelectedType("ECRITURE_LIBRE")}
-                className={`px-3 py-1 font-black border-2 border-black ${selectedType === "ECRITURE_LIBRE" ? 'bg-blue-400' : 'bg-white hover:bg-blue-100'}`}
-              >
-                ✍️ LIBRE
-              </button>
-              <button
-                onClick={() => setSelectedType("PROMPT_WRITING")}
-                className={`px-3 py-1 font-black border-2 border-black ${selectedType === "PROMPT_WRITING" ? 'bg-green-400' : 'bg-white hover:bg-green-100'}`}
-              >
-                💡 PROMPT
-              </button>
-              <button
-                onClick={() => setSelectedType("COLLABORATIVE_WRITING")}
-                className={`px-3 py-1 font-black border-2 border-black ${selectedType === "COLLABORATIVE_WRITING" ? 'bg-purple-400' : 'bg-white hover:bg-purple-100'}`}
-              >
-                👥 COLLABORATIF
-              </button>
+              
+              {/* Générer les boutons de filtre dynamiquement à partir des types d'exercices disponibles */}
+              {Array.from(new Set(writings.map(writing => writing.exerciseType))).map(type => (
+                <button
+                  key={type}
+                  onClick={() => setSelectedType(type)}
+                  className={`px-3 py-1 font-black border-2 border-black ${selectedType === type ? getExerciseColor(type) : `bg-white hover:${getExerciseColor(type).replace('bg-', 'bg-').replace('400', '100')}`}`}
+                >
+                  {getExerciseEmoji(type)} {getExerciseTypeName(type).toUpperCase().split('_').join(' ')}
+                </button>
+              ))}
             </div>
           </motion.div>
 
@@ -570,7 +580,7 @@ export default function MyLibrary() {
             </>
           )}
 
-          {/* Motivation Banner */}
+          {/* Motivation Banner avec placeholder de chargement */}
           {writings.length > 0 && (
             <motion.div
               initial={{ opacity: 0, y: 30 }}
@@ -579,24 +589,36 @@ export default function MyLibrary() {
               className="mt-12 bg-pink-400 border-4 border-black p-6 text-center transform -rotate-1"
               style={{ boxShadow: "8px 8px 0px #000" }}
             >
-              <h3 className="text-2xl font-black mb-4">
-                <Zap className="inline-block mr-2" size={24} />
-                TU ES À {Math.min(100, Math.floor((writings.length / 30) * 100))}% DU NIVEAU EINSTEIN
-              </h3>
-              <p className="font-bold text-lg mb-6">
-                {writings.length < 10 ? 
-                  "Continue d'écrire pour transformer ton cerveau en supercalculateur !" :
-                  "Tu es un mutant cérébral en devenir, persévère !"}
-              </p>
-              <motion.button
-                whileHover={{ scale: 1.05, rotate: 2 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => router.push('/new-writing')}
-                className="bg-black text-white font-black text-xl py-3 px-8 border-4 border-black hover:bg-yellow-300 hover:text-black transition-all"
-              >
-                <Brain className="inline-block mr-2" size={20} />
-                ÉCRIRE ENCORE →
-              </motion.button>
+              {loading ? (
+                // Placeholder de chargement pour la bannière de motivation
+                <div className="animate-pulse">
+                  <div className="h-8 bg-gray-300 w-3/4 mx-auto mb-4 rounded"></div>
+                  <div className="h-6 bg-gray-300 w-1/2 mx-auto mb-6 rounded"></div>
+                  <div className="h-12 bg-gray-300 w-40 mx-auto rounded"></div>
+                </div>
+              ) : (
+                // Contenu réel
+                <>
+                  <h3 className="text-2xl font-black mb-4">
+                    <Zap className="inline-block mr-2" size={24} />
+                    TU ES À {Math.min(100, Math.floor((writings.length / 30) * 100))}% DU NIVEAU EINSTEIN
+                  </h3>
+                  <p className="font-bold text-lg mb-6">
+                    {writings.length < 10 ? 
+                      "Continue d'écrire pour transformer ton cerveau en supercalculateur !" :
+                      "Tu es un mutant cérébral en devenir, persévère !"}
+                  </p>
+                  <motion.button
+                    whileHover={{ scale: 1.05, rotate: 2 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => router.push('/new-writing')}
+                    className="bg-black text-white font-black text-xl py-3 px-8 border-4 border-black hover:bg-yellow-300 hover:text-black transition-all"
+                  >
+                    <Brain className="inline-block mr-2" size={20} />
+                    ÉCRIRE ENCORE →
+                  </motion.button>
+                </>
+              )}
             </motion.div>
           )}
 
