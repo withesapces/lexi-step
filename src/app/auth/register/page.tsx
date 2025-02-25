@@ -1,20 +1,75 @@
-// src/app/auth/register/page.tsx
-
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { FcGoogle } from "react-icons/fc";
 import { signIn } from "next-auth/react";
 import { motion } from "framer-motion";
+import { debounce } from 'lodash';
 
 export default function Register() {
   const [formData, setFormData] = useState({
     name: "",
+    username: "",
     email: "",
     password: "",
     confirmPassword: "",
   });
+
+  const [usernameStatus, setUsernameStatus] = useState({
+    isChecking: false,
+    isAvailable: true,
+    message: ""
+  });
+
+  // Fonction debounce pour éviter trop de requêtes pendant la saisie
+  const checkUsernameAvailability = debounce(async (username: string) => {
+    if (!username || username.length < 3) {
+      setUsernameStatus({
+        isChecking: false,
+        isAvailable: false,
+        message: username ? "Pseudo trop court (min. 3 caractères)" : ""
+      });
+      return;
+    }
+
+    setUsernameStatus(prev => ({ ...prev, isChecking: true }));
+
+    try {
+      const response = await fetch(`/api/auth/check-username?username=${encodeURIComponent(username)}`);
+      const data = await response.json();
+
+      if (response.ok) {
+        setUsernameStatus({
+          isChecking: false,
+          isAvailable: data.available,
+          message: data.available ? "✅ Pseudo disponible" : "❌ Pseudo déjà pris"
+        });
+      } else {
+        setUsernameStatus({
+          isChecking: false,
+          isAvailable: false,
+          message: "Erreur lors de la vérification"
+        });
+      }
+    } catch (error) {
+      console.error("Erreur lors de la vérification du pseudo:", error);
+      setUsernameStatus({
+        isChecking: false,
+        isAvailable: false,
+        message: "Erreur de connexion"
+      });
+    }
+  }, 500);
+
+  useEffect(() => {
+    if (formData.username) {
+      checkUsernameAvailability(formData.username);
+    }
+    return () => {
+      checkUsernameAvailability.cancel();
+    };
+  }, [formData.username]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -25,6 +80,18 @@ export default function Register() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    // Vérification que le mot de passe et la confirmation correspondent
+    if (formData.password !== formData.confirmPassword) {
+      alert("Les mots de passe ne correspondent pas!");
+      return;
+    }
+
+    // Vérification que le pseudo est valide et disponible
+    if (!usernameStatus.isAvailable) {
+      alert("Le pseudo n'est pas valide ou déjà pris!");
+      return;
+    }
 
     try {
       const response = await fetch("/api/auth/register", {
@@ -42,7 +109,7 @@ export default function Register() {
         // Connecter directement l'utilisateur avec NextAuth
         const res = await signIn("credentials", {
           redirect: false,
-          email: formData.email,
+          identifier: formData.email, // Utiliser l'email comme identifiant par défaut
           password: formData.password,
         });
         if (res?.ok) {
@@ -85,6 +152,13 @@ export default function Register() {
     }
   };
 
+  // Fonction helper pour déterminer la couleur du message de status du pseudo
+  const getUsernameStatusColor = () => {
+    if (usernameStatus.isChecking) return "text-gray-500";
+    if (!usernameStatus.message) return "";
+    return usernameStatus.isAvailable ? "text-green-600" : "text-red-600";
+  };
+
   return (
     <div className="min-h-screen overflow-hidden bg-yellow-300 flex flex-col items-center justify-center px-4 py-8 relative">
       <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-20 pointer-events-none" />
@@ -123,6 +197,29 @@ export default function Register() {
           </motion.div>
 
           <motion.div variants={itemVariants}>
+            <label htmlFor="username" className="block font-black text-xl mb-2">
+              🔥 Pseudo unique de génie
+            </label>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              placeholder="DrEinstein, SuperNewton..."
+              value={formData.username}
+              onChange={handleChange}
+              className={`w-full border-3 border-black p-3 text-lg font-bold focus:outline-none transition-all ${
+                usernameStatus.isAvailable ? "focus:bg-purple-100" : "focus:bg-red-100"
+              }`}
+              required
+            />
+            {(usernameStatus.isChecking || usernameStatus.message) && (
+              <p className={`mt-2 text-sm font-bold ${getUsernameStatusColor()}`}>
+                {usernameStatus.isChecking ? "Vérification en cours..." : usernameStatus.message}
+              </p>
+            )}
+          </motion.div>
+
+          <motion.div variants={itemVariants}>
             <label htmlFor="email" className="block font-black text-xl mb-2">
               📧 Email de cerveau supérieur
             </label>
@@ -151,6 +248,7 @@ export default function Register() {
               onChange={handleChange}
               className="w-full border-3 border-black p-3 text-lg font-bold focus:bg-green-100 focus:outline-none transition-all"
               required
+              minLength={8}
             />
           </motion.div>
 
@@ -176,6 +274,7 @@ export default function Register() {
             className="w-full bg-black text-white font-black text-xl py-4 mt-6 border-4 border-black hover:bg-yellow-400 hover:text-black transition-all transform hover:-translate-y-1"
             whileHover={{ scale: 1.03, rotate: 1 }}
             whileTap={{ scale: 0.97 }}
+            disabled={!usernameStatus.isAvailable}
           >
             ACTIVER TON SUPER-CERVEAU 🚀
           </motion.button>

@@ -7,7 +7,10 @@ import { FcGoogle } from "react-icons/fc";
 import { motion } from "framer-motion";
 
 export default function Login() {
-  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [formData, setFormData] = useState({ 
+    identifier: "", // Remplace email par identifier pour accepter email ou username
+    password: "" 
+  });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -18,7 +21,7 @@ export default function Login() {
     // Utilise la fonction signIn pour se connecter avec les credentials
     const res = await signIn("credentials", {
       redirect: false,
-      email: formData.email,
+      identifier: formData.identifier, // On envoie l'identifiant (email ou username)
       password: formData.password,
     });
     if (res?.ok) {
@@ -61,15 +64,15 @@ export default function Login() {
             animate={{ x: 0, opacity: 1 }}
             transition={{ delay: 0.3, duration: 0.5 }}
           >
-            <label htmlFor="email" className="block font-bold mb-2 text-xl">
-              📧 Email de génie
+            <label htmlFor="identifier" className="block font-bold mb-2 text-xl">
+              📧 Email ou pseudo de génie
             </label>
             <input
-              type="email"
-              id="email"
-              name="email"
-              placeholder="einstein@cerveau.fr"
-              value={formData.email}
+              type="text"
+              id="identifier"
+              name="identifier"
+              placeholder="einstein@cerveau.fr ou DrEinstein"
+              value={formData.identifier}
               onChange={handleChange}
               className="w-full border-3 border-black p-3 font-bold text-lg focus:bg-yellow-100 focus:outline-none transition-all"
               required

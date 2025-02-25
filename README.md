@@ -41,10 +41,10 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 - Le streak ne doit pas être pris en compte si l'utilisateur n'a pas atteint son quota journalier (au moment de l'enregistrement d'un writing) 👌
   a. Si un utilisateur modifie son objectif quotidien, ça doit mettre à jour le streak. 👌
   b. Si un utilisateur perds une streak un jour, il peut la retrouver en regardant une pub. Si c'est 2x d'affiliée, il ne peut pas et c'est perdu. 
-- Faire les badges (une fois qu'on a gagné un badge, on ne doit pas pouvoir le perdre)
+- Faire les badges (une fois qu'on a gagné un badge, on ne doit pas pouvoir le perdre) 👌
 - Avant le lancement il doit y avoir le mode prompt comme jeu
 - Quand on supprime un article, ça ne doit pas supprimer le nombre de mots totaux
-- L'utilisateur doit avoir un nom de profil qui doit être unique et pas un nom et prénom
+- L'utilisateur doit avoir un nom de profil qui doit être unique et pas un nom et prénom 👌
 - Trouver ce qui sera payant et non payant
 
 - LEXISTEP

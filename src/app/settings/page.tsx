@@ -7,7 +7,6 @@ import { motion } from "framer-motion";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Navbar from "../components/Navbar";
-import Moodboard from "../components/moodboard";
 import BadgeGallery from "../components/BadgeGallery";
 import StyledMoodTracker from "../components/moodboard";
 
@@ -376,7 +375,7 @@ export default function ProfilePage() {
                   className="text-5xl font-black mb-4 transform -rotate-2"
                   style={{ textShadow: "3px 3px 0px #000" }}
                 >
-                  {user?.name || "GÉNIE ANONYME"}
+                  {user?.username || "GÉNIE ANONYME"}
                 </motion.h1>
                 <motion.div
                   initial={{ x: -10, opacity: 0 }}

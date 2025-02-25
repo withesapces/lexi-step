@@ -13,6 +13,7 @@ model User {
   email      String        @unique
   password   String
   name       String
+  username   String        @unique // Ajout du champ username (pseudo) unique
   createdAt  DateTime      @default(now())
   accounts   Account[]
   sessions   Session[]

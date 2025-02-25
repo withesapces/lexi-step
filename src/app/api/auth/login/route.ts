@@ -1,3 +1,5 @@
+// src/app/api/auth/login/route.ts
+
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
@@ -25,14 +27,22 @@ export async function POST(req: Request) {
       return NextResponse.json({ message: "Format JSON invalide" }, { status: 400 });
     }
 
-    const { email, password } = body;
+    const { identifier, password } = body;
 
-    if (!email || !password) {
-      return NextResponse.json({ message: "Email et mot de passe sont requis" }, { status: 400 });
+    if (!identifier || !password) {
+      return NextResponse.json({ message: "Identifiant et mot de passe sont requis" }, { status: 400 });
     }
 
-    // Recherche de l'utilisateur par email
-    const user = await prisma.user.findUnique({ where: { email } });
+    // Recherche de l'utilisateur par email ou username
+    const user = await prisma.user.findFirst({
+      where: {
+        OR: [
+          { email: identifier },
+          { username: identifier }
+        ],
+      },
+    });
+    
     if (!user) {
       return NextResponse.json({ message: "Utilisateur non trouvé" }, { status: 404 });
     }
