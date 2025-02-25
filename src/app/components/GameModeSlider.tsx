@@ -1,5 +1,3 @@
-// /src/app/components/GameModeSlider.tsx
-
 "use client";
 
 import { useRef, useState, useEffect } from "react";
@@ -14,7 +12,8 @@ export interface GameMode {
   bgColor: string;
   redirectUrl: string;
   emoji: string;
-  prompts: string[];
+  prompts?: string[]; // Make prompts optional
+  dailyMessage?: string; // Add an optional dailyMessage field
   isUnderConstruction?: boolean; 
 }
 
@@ -134,6 +133,36 @@ export default function GameModeSlider({
     return null;
   }
 
+  // Helper function to determine what to display in the info box
+  const getInfoBoxContent = (mode: GameMode) => {
+    // If there's a dailyMessage, use it
+    if (mode.dailyMessage) {
+      return (
+        <>
+          <p className="italic">{mode.dailyMessage}</p>
+        </>
+      );
+    }
+    
+    // If there are prompts, show the first one as a daily challenge
+    if (mode.prompts && mode.prompts.length > 0) {
+      return (
+        <>
+          <p className="font-bold text-sm mb-1">DÉFI DU JOUR:</p>
+          <p className="italic">{mode.prompts[0]}</p>
+        </>
+      );
+    }
+    
+    // Default message if neither is available
+    return (
+      <>
+        <p className="font-bold text-sm mb-1">MODE D'ÉCRITURE:</p>
+        <p className="italic">Écris librement à ton rythme</p>
+      </>
+    );
+  };
+
   return (
     <div className="relative">
       {/* SLIDER TITLE */}
@@ -244,8 +273,7 @@ export default function GameModeSlider({
                     </div>
 
                     <div className="bg-black text-white p-4 border-2 border-white mb-6">
-                      <p className="font-bold text-sm mb-1">DÉFI DU JOUR:</p>
-                      <p className="italic">{mode.prompts[0]}</p>
+                      {getInfoBoxContent(mode)}
                     </div>
 
                     {/* Card Bottom */}

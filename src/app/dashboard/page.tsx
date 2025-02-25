@@ -24,7 +24,7 @@ export default function GameModePage() {
       bgColor: "bg-yellow-300",
       redirectUrl: "/dashboard/game/free-writing",
       emoji: "✨",
-      prompts: ["Écris sans t'arrêter pendant 5 minutes", "Laisse couler tes pensées..."]
+      dailyMessage: "Écris à ton rythme, sans jugement ni contrainte"
     },
     {
       id: "journal-intime",
