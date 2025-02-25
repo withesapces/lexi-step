@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -12,8 +11,9 @@ export default function GameModePage() {
   const { data: session, status } = useSession();
   const [mounted, setMounted] = useState<boolean>(false);
   const [activeMode, setActiveMode] = useState<string | null>(null);
-  const [streakDays, setStreakDays] = useState<number>(0);
-  const [dailyGoal, setDailyGoal] = useState<number>(200);
+  const [streakDays, setStreakDays] = useState<number | null>(null);
+  const [dailyGoal, setDailyGoal] = useState<number | null>(null);
+  const [isStatsLoading, setIsStatsLoading] = useState<boolean>(true);
 
   // Game modes data
   const gameModes: GameMode[] = [
@@ -86,6 +86,7 @@ export default function GameModePage() {
 
     // Fetch user statistics from the API
     const fetchUserStats = async () => {
+      setIsStatsLoading(true);
       try {
         const res = await fetch("/api/user/stats");
         if (res.ok) {
@@ -97,6 +98,8 @@ export default function GameModePage() {
         }
       } catch (error) {
         console.error("Erreur serveur :", error);
+      } finally {
+        setIsStatsLoading(false);
       }
     };
 
@@ -154,15 +157,31 @@ export default function GameModePage() {
                 variants={itemVariants}
                 className="flex flex-col sm:flex-row gap-4"
               >
-                <div className="bg-black text-white p-4 transform border-2 border-black">
-                  <div className="font-bold">STREAK ACTUELLE</div>
-                  <div className="text-4xl font-black text-yellow-300">{streakDays} JOURS 🔥</div>
-                </div>
-                
-                <div className="bg-white p-4 transform border-2 border-black">
-                  <div className="font-bold">OBJECTIF QUOTIDIEN</div>
-                  <div className="text-2xl font-black">{dailyGoal} MOTS</div>
-                </div>
+                {isStatsLoading ? (
+                  <>
+                    <div className="bg-black text-white p-4 transform border-2 border-black">
+                      <div className="font-bold">STREAK ACTUELLE</div>
+                      <div className="h-12 bg-gray-700 animate-pulse rounded mt-1"></div>
+                    </div>
+                    
+                    <div className="bg-white p-4 transform border-2 border-black">
+                      <div className="font-bold">OBJECTIF QUOTIDIEN</div>
+                      <div className="h-8 bg-gray-300 animate-pulse rounded mt-1"></div>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="bg-black text-white p-4 transform border-2 border-black">
+                      <div className="font-bold">STREAK ACTUELLE</div>
+                      <div className="text-4xl font-black text-yellow-300">{streakDays} JOURS 🔥</div>
+                    </div>
+                    
+                    <div className="bg-white p-4 transform border-2 border-black">
+                      <div className="font-bold">OBJECTIF QUOTIDIEN</div>
+                      <div className="text-2xl font-black">{dailyGoal} MOTS</div>
+                    </div>
+                  </>
+                )}
               </motion.div>
             </div>
             
