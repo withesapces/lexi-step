@@ -11,6 +11,163 @@ import Moodboard from "../components/moodboard";
 import BadgeGallery from "../components/BadgeGallery";
 import StyledMoodTracker from "../components/moodboard";
 
+interface Stat {
+  label: string;
+  value: string | number;
+  icon: string;
+  color: string;
+}
+
+interface StatCardPopupProps {
+  stat: Stat | null;
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+const StatCardPopup = ({ stat, isOpen, onClose }: StatCardPopupProps) => {
+  if (!isOpen || !stat) return null;
+  
+  // Définition du contenu spécifique à chaque type de statistique
+  const getPopupContent = () => {
+    switch(stat.label) {
+      case "NIVEAU CÉRÉBRAL":
+        return {
+          icon: "🧠",
+          title: "TON CERVEAU EST ÉNORME",
+          description: "Le niveau cérébral mesure ta production totale d'écriture.",
+          details: [
+            { label: "DÉBUTANT", value: "0 - 5 000 mots", description: "Ton cerveau commence à peine à s'échauffer." },
+            { label: "INTERMÉDIAIRE", value: "5 000 - 10 000 mots", description: "Tu développes de nouvelles connexions neuronales." },
+            { label: "AVANCÉ", value: "10 000 - 20 000 mots", description: "Ton cortex préfrontal s'illumine comme un sapin de Noël." },
+            { label: "PRO", value: "20 000 - 50 000 mots", description: "La NASA s'intéresse à ton activité cérébrale." },
+            { label: "GÉNIE", value: "50 000 - 100 000 mots", description: "Einstein serait jaloux de tes capacités." },
+            { label: "LÉGENDAIRE", value: "100 000+ mots", description: "Ton cerveau pourrait alimenter une petite ville en électricité." }
+          ],
+          currentValue: stat.value,
+          tip: "Écris régulièrement pour développer ton cerveau encore plus rapidement !"
+        };
+      case "NIVEAU FLUIDITÉ":
+        return {
+          icon: "💧",
+          title: "TA PLUME COULE COMME...",
+          description: "La fluidité mesure ta cadence quotidienne d'écriture en moyenne.",
+          details: [
+            { label: "RUISSEAU", value: "0 - 400 mots/jour", description: "Un gentil filet d'eau qui commence son parcours." },
+            { label: "RIVIÈRE", value: "400 - 800 mots/jour", description: "Un flux constant et impressionnant." },
+            { label: "TORRENT", value: "800+ mots/jour", description: "Rien ne peut arrêter ton flux d'écriture." }
+          ],
+          currentValue: stat.value,
+          tip: "Essaie d'écrire à la même heure chaque jour pour améliorer ta fluidité !"
+        };
+      case "NIVEAU CONSTANCE":
+        return {
+          icon: "📅",
+          title: "LA RÉGULARITÉ FAIT LE MAÎTRE",
+          description: "La constance mesure combien de jours consécutifs tu as écrit.",
+          details: [
+            { label: "OCCASIONNEL", value: "0 - 14 jours", description: "Tu viens quand ça te chante." },
+            { label: "RÉGULIER", value: "14 - 30 jours", description: "Tu as adopté une belle routine." },
+            { label: "MARATHON", value: "30+ jours", description: "Rien ne peut t'arrêter, même pas le dimanche." }
+          ],
+          currentValue: stat.value,
+          tip: "Fixe-toi un objectif de série et ne la brise pas !"
+        };
+      // Ajoutez d'autres cas selon vos statistiques
+      default:
+        return {
+          icon: stat.icon,
+          title: stat.label,
+          description: "Statistique d'écriture personnalisée",
+          details: [
+            { label: stat.value, value: "Valeur actuelle", description: "Continue ton bon travail !" }
+          ],
+          currentValue: stat.value,
+          tip: "Continue d'écrire régulièrement pour progresser !"
+        };
+    }
+  };
+  
+  const content = getPopupContent();
+  
+  return (
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center p-4 z-50 overflow-y-auto"
+    >
+      <motion.div 
+        className="bg-white border-4 border-black p-6 w-full max-w-2xl my-8"
+        style={{ boxShadow: "8px 8px 0px #000" }}
+        initial={{ scale: 0.9, rotate: -2 }}
+        animate={{ scale: 1, rotate: 0 }}
+      >
+        {/* Close button fixed at the top right of the popup */}
+        <div className="sticky top-0 flex justify-end mb-4 z-10">
+          <motion.button
+            whileHover={{ scale: 1.1, rotate: 3 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={onClose}
+            className="bg-black text-white font-bold px-3 py-1"
+            aria-label="Fermer"
+          >
+            X
+          </motion.button>
+        </div>
+        
+        <div className="text-center mb-6">
+          <div className="text-6xl mb-4">{content.icon}</div>
+          <h2 className="text-4xl font-black mb-4 transform -rotate-1">
+            <span className={`${stat.color} px-4 py-2 inline-block`}>
+              {content.title}
+            </span>
+          </h2>
+          <p className="text-lg font-bold">
+            {content.description}
+          </p>
+        </div>
+        
+        <div className="bg-gray-100 border-4 border-black p-4 mb-6">
+          <h3 className="text-xl font-black mb-4">NIVEAU ACTUEL: {content.currentValue}</h3>
+          
+          <div className="space-y-4">
+            {content.details.map((level, index) => (
+              <div 
+                key={index}
+                className={`p-3 border-2 border-black ${content.currentValue === level.label ? `${stat.color} border-4` : 'bg-white'}`}
+              >
+                <div className="flex justify-between items-center">
+                  <span className="font-black text-lg">{level.label}</span>
+                  <span className="font-bold">{level.value}</span>
+                </div>
+                <p className="text-sm mt-1">{level.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+        
+        <div className="bg-yellow-100 border-4 border-black p-4 mb-6">
+          <h3 className="text-lg font-black mb-2">💡 ASTUCE DE GÉNIE</h3>
+          <p className="font-bold">
+            {content.tip}
+          </p>
+        </div>
+        
+        <div className="flex justify-center">
+          <motion.button
+            whileHover={{ scale: 1.05, rotate: 1 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={onClose}
+            className="bg-black text-white font-black text-xl px-6 py-3 border-4 border-black"
+          >
+            RETOUR À MON PROFIL
+          </motion.button>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+};
+
 export default function ProfilePage() {
   const { data: session, status } = useSession();
   const router = useRouter();
@@ -26,6 +183,8 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [loadingStats, setLoadingStats] = useState(true);
+  const [selectedStat, setSelectedStat] = useState(null);
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
 
   // Récupérer les stats et les badges au chargement
   useEffect(() => {
@@ -123,10 +282,15 @@ export default function ProfilePage() {
     },
     {
       label: "NIVEAU CÉRÉBRAL",
-      value: userStats.totalWords > 50000 ? "GÉNIE" : userStats.totalWords > 20000 ? "PRO" : "DÉBUTANT",
+      value: userStats.totalWords > 100000 ? "LÉGENDAIRE" : 
+             userStats.totalWords > 50000 ? "GÉNIE" : 
+             userStats.totalWords > 20000 ? "PRO" : 
+             userStats.totalWords > 10000 ? "AVANCÉ" : 
+             userStats.totalWords > 5000 ? "INTERMÉDIAIRE" : 
+             "DÉBUTANT",
       icon: "🧠",
       color: "bg-green-400"
-    },
+    }
   ];
 
   if (status === "loading" || loadingStats) {
@@ -143,6 +307,7 @@ export default function ProfilePage() {
 
   // Calculer le pourcentage de progression quotidienne
   const dailyProgressPercent = Math.min(100, (userStats.today / dailyGoal) * 100);
+
 
   return (
     <div className="min-h-screen bg-yellow-300 overflow-hidden">
@@ -231,7 +396,11 @@ export default function ProfilePage() {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.3 + index * 0.1 }}
                       whileHover={{ scale: 1.05, rotate: index % 2 === 0 ? 2 : -2 }}
-                      className={`${stat.color} border-4 border-black p-4 text-center`}
+                      className={`${stat.color} border-4 border-black p-4 text-center cursor-pointer`}
+                      onClick={() => {
+                        setSelectedStat(stat);
+                        setIsPopupOpen(true);
+                      }}
                     >
                       <div className="text-3xl mb-2">{stat.icon}</div>
                       <div className="text-xl font-black">{stat.value}</div>
@@ -239,6 +408,13 @@ export default function ProfilePage() {
                     </motion.div>
                   ))}
                 </div>
+
+                {/* Popup pour les statistiques */}
+                <StatCardPopup 
+                  stat={selectedStat} 
+                  isOpen={isPopupOpen && selectedStat !== null} 
+                  onClose={() => setIsPopupOpen(false)} 
+                />
               </div>
             </div>
           </motion.div>
