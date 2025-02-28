@@ -111,29 +111,7 @@ export default function Login() {
             ACTIVER TON CERVEAU →
           </motion.button>
         </form>
-        
-        <motion.div 
-          className="my-8"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.6, duration: 0.5 }}
-        >
-          <div className="relative flex items-center justify-center">
-            <div className="flex-grow border-t-4 border-black"></div>
-            <span className="mx-4 px-4 font-black text-lg bg-pink-400 transform rotate-2 inline-block">OU ALORS</span>
-            <div className="flex-grow border-t-4 border-black"></div>
-          </div>
-          
-          <motion.button
-            onClick={handleGoogleSignIn}
-            className="mt-6 w-full bg-white text-black font-bold text-lg py-3 border-4 border-black hover:bg-blue-400 transition-all flex items-center justify-center space-x-3"
-            whileHover={{ scale: 1.02, rotate: -1 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <FcGoogle size={24} />
-            <span className="font-black">CONNEXION AVEC GOOGLE</span>
-          </motion.button>
-        </motion.div>
+      
         
         <motion.p 
           className="text-center font-bold text-lg mt-6"

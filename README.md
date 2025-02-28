@@ -40,6 +40,7 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 
 - Le streak ne doit pas être pris en compte si l'utilisateur n'a pas atteint son quota journalier (au moment de l'enregistrement d'un writing) 👌
   a. Si un utilisateur modifie son objectif quotidien, ça doit mettre à jour le streak. 👌
+  b. Si un utilisateur ne se connecte pas et perds sa streak, il ne faut pas attendre qu'il publie une nouvelle entrée pour mettre à jour sa streak
   b. Si un utilisateur perds une streak un jour, il peut la retrouver en regardant une pub. Si c'est 2x d'affiliée, il ne peut pas et c'est perdu. 
 - Faire les badges (une fois qu'on a gagné un badge, on ne doit pas pouvoir le perdre) 👌
 - Avant le lancement il doit y avoir le mode prompt comme jeu

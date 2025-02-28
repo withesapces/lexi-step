@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { FcGoogle } from "react-icons/fc";
 import { signIn } from "next-auth/react";
 import { motion } from "framer-motion";
 import { debounce } from 'lodash';
@@ -126,11 +125,6 @@ export default function Register() {
       console.error("Erreur lors de l'inscription :", error);
       alert("Erreur serveur");
     }
-  };
-
-  const handleGoogleSignIn = () => {
-    // Placeholder pour la connexion avec Google
-    signIn("google", { callbackUrl: "/dashboard" });
   };
 
   const containerVariants = {
@@ -279,30 +273,6 @@ export default function Register() {
             ACTIVER TON SUPER-CERVEAU 🚀
           </motion.button>
         </form>
-
-        <motion.div 
-          variants={itemVariants}
-          className="mt-8 mb-6"
-        >
-          <div className="relative flex items-center justify-center">
-            <div className="flex-grow border-t-4 border-black"></div>
-            <span className="mx-4 px-4 py-1 font-black text-lg bg-blue-400 transform rotate-1 inline-block">
-              OPTION RAPIDE
-            </span>
-            <div className="flex-grow border-t-4 border-black"></div>
-          </div>
-          
-          <motion.button
-            variants={itemVariants}
-            onClick={handleGoogleSignIn}
-            className="mt-6 w-full bg-white text-black font-black text-lg py-3 border-4 border-black hover:bg-pink-400 transition-all flex items-center justify-center space-x-3"
-            whileHover={{ scale: 1.02, rotate: -1 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <FcGoogle size={24} />
-            <span>GÉNIE EXPRESS AVEC GOOGLE</span>
-          </motion.button>
-        </motion.div>
 
         <motion.div
           variants={itemVariants}
