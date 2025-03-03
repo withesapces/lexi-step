@@ -6,11 +6,10 @@ import { prisma } from "@/lib/prisma";
 
 export async function DELETE(
   req: NextRequest,
-  context: { params: { id: string } }
+  { params }: { params: { id: string } }
 ) {
-  const { id } = context.params;
   try {
-    const entryId = id;
+    const entryId = params.id;
     const session = await getServerSession(authOptions);
     
     if (!session || !session.user) {
