@@ -8,6 +8,7 @@ export async function DELETE(
   req: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  const { id } = context.params;
   try {
     const entryId = params.id;
     const session = await getServerSession(authOptions);
