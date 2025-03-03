@@ -5,11 +5,11 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 export async function DELETE(
-  req: NextRequest,
-  { params }: { params: { id: string } }
+  request: Request,
+  context: { params: { id: string } }
 ) {
   try {
-    const entryId = params.id;
+    const entryId = context.params.id;
     const session = await getServerSession(authOptions);
     
     if (!session || !session.user) {
