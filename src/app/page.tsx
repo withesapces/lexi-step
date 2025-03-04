@@ -225,21 +225,6 @@ export default function Home() {
                 whileHover={{ scale: 1.02, rotate: 1 }}
                 className="p-6 bg-white border-4 border-black"
               >
-                <div className="text-3xl mb-4">💰 Économies réalisées</div>
-                <p className="text-xl font-bold">
-                  "Écrire mes pulsions d'achat avant de valider mon panier m'a fait économiser 3420€ en deux mois.
-                  Amazon me déteste !"
-                </p>
-                <p className="mt-4 font-black">- Julie F, Raisonnable</p>
-              </motion.div>
-            </div>
-
-            {/* Additional Testimonials with Different Style */}
-            <div className="mt-12 grid md:grid-cols-2 gap-8">
-            <motion.div
-                whileHover={{ scale: 1.02, rotate: 1 }}
-                className="p-6 bg-white border-4 border-black"
-              >
                 <div className="text-3xl mb-4">🔑 Organisation</div>
                 <p className="text-xl font-bold">
                   "Avant, je perdais mes clés 3 fois par jour. Maintenant je les perds qu'une fois !
@@ -247,19 +232,8 @@ export default function Home() {
                 </p>
                 <p className="mt-4 font-black">- Kevin L, Plus vraiment tête en l'air</p>
               </motion.div>
-
-              <motion.div
-                whileHover={{ scale: 1.02, rotate: 1 }}
-                className="p-6 bg-white border-4 border-black"
-              >
-                <div className="text-3xl mb-4">🎯 Focus</div>
-                <p className="text-xl font-bold">
-                  "J'ai enfin fini cette série Netflix que je regardais depuis 2019.
-                  Et en plus, je me souviens de l'intrigue !"
-                </p>
-                <p className="mt-4 font-black">- Sarah M, Focus Master</p>
-              </motion.div>
             </div>
+
           </motion.div>
         </section>
 
