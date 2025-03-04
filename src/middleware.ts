@@ -1,3 +1,5 @@
+// src/middleware.ts
+
 import { withAuth } from "next-auth/middleware";
 
 export default withAuth(
@@ -14,5 +16,5 @@ export default withAuth(
 );
 
 export const config = {
-  matcher: ["/((?!auth|api/auth|_next|favicon.ico).*)"],
+  matcher: ["/((?!^$|auth|api/auth|_next|favicon.ico).*)"],
 };
