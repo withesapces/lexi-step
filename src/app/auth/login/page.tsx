@@ -8,7 +8,7 @@ import { motion } from "framer-motion";
 
 export default function Login() {
   const [formData, setFormData] = useState({ 
-    identifier: "", // Remplace email par identifier pour accepter email ou username
+    identifier: "",
     password: "" 
   });
 
@@ -18,22 +18,16 @@ export default function Login() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Utilise la fonction signIn pour se connecter avec les credentials
     const res = await signIn("credentials", {
       redirect: false,
-      identifier: formData.identifier, // On envoie l'identifiant (email ou username)
+      identifier: formData.identifier,
       password: formData.password,
     });
     if (res?.ok) {
-      window.location.href = "/dashboard"; // Rediriger vers la page d'accueil ou le dashboard
+      window.location.href = "/dashboard";
     } else {
       alert("Erreur de connexion : " + res?.error);
     }
-  };
-
-  const handleGoogleSignIn = async () => {
-    // Vous pouvez ajouter ici la connexion avec Google
-    await signIn("google", { callbackUrl: "/" });
   };
 
   return (
@@ -65,7 +59,7 @@ export default function Login() {
             transition={{ delay: 0.3, duration: 0.5 }}
           >
             <label htmlFor="identifier" className="block font-bold mb-2 text-xl">
-              📧 Email ou pseudo de génie
+              📧 Email ou pseudo
             </label>
             <input
               type="text"
@@ -74,7 +68,7 @@ export default function Login() {
               placeholder="einstein@cerveau.fr ou DrEinstein"
               value={formData.identifier}
               onChange={handleChange}
-              className="w-full border-3 border-black p-3 font-bold text-lg focus:bg-yellow-100 focus:outline-none transition-all"
+              className="w-full border-2 border-black p-3 font-bold text-lg focus:bg-yellow-100 focus:outline-none focus:ring-2 focus:ring-yellow-400 transition-all"
               required
             />
           </motion.div>
@@ -94,7 +88,7 @@ export default function Login() {
               placeholder="Ton mot de passe ultra-sécurisé"
               value={formData.password}
               onChange={handleChange}
-              className="w-full border-3 border-black p-3 font-bold text-lg focus:bg-yellow-100 focus:outline-none transition-all"
+              className="w-full border-2 border-black p-3 font-bold text-lg focus:bg-yellow-100 focus:outline-none focus:ring-2 focus:ring-yellow-400 transition-all"
               required
             />
           </motion.div>
@@ -112,7 +106,6 @@ export default function Login() {
           </motion.button>
         </form>
       
-        
         <motion.p 
           className="text-center font-bold text-lg mt-6"
           initial={{ y: 20, opacity: 0 }}

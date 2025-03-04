@@ -185,7 +185,7 @@ export default function Register() {
               placeholder="Newton, Einstein, Toi..."
               value={formData.name}
               onChange={handleChange}
-              className="w-full border-3 border-black p-3 text-lg font-bold focus:bg-pink-100 focus:outline-none transition-all transform hover:rotate-0"
+              className="w-full border-2 border-black p-3 font-bold text-lg focus:bg-yellow-100 focus:outline-none focus:ring-2 focus:ring-yellow-400 transition-all"
               required
             />
           </motion.div>
@@ -201,7 +201,7 @@ export default function Register() {
               placeholder="DrEinstein, SuperNewton..."
               value={formData.username}
               onChange={handleChange}
-              className={`w-full border-3 border-black p-3 text-lg font-bold focus:outline-none transition-all ${
+              className={`w-full border-2 border-black p-3 text-lg font-bold focus:outline-none transition-all ${
                 usernameStatus.isAvailable ? "focus:bg-purple-100" : "focus:bg-red-100"
               }`}
               required
@@ -224,7 +224,7 @@ export default function Register() {
               placeholder="ton.genie@neurones.fr"
               value={formData.email}
               onChange={handleChange}
-              className="w-full border-3 border-black p-3 text-lg font-bold focus:bg-blue-100 focus:outline-none transition-all"
+              className="w-full border-2 border-black p-3 text-lg font-bold focus:bg-blue-100 focus:outline-none transition-all"
               required
             />
           </motion.div>
@@ -240,7 +240,7 @@ export default function Register() {
               placeholder="Minimum 8 caractères géniaux"
               value={formData.password}
               onChange={handleChange}
-              className="w-full border-3 border-black p-3 text-lg font-bold focus:bg-green-100 focus:outline-none transition-all"
+              className="w-full border-2 border-black p-3 text-lg font-bold focus:bg-green-100 focus:outline-none transition-all"
               required
               minLength={8}
             />
@@ -257,7 +257,7 @@ export default function Register() {
               placeholder="Même code, même génie"
               value={formData.confirmPassword}
               onChange={handleChange}
-              className="w-full border-3 border-black p-3 text-lg font-bold focus:bg-yellow-100 focus:outline-none transition-all"
+              className="w-full border-2 border-black p-3 text-lg font-bold focus:bg-yellow-100 focus:outline-none transition-all"
               required
             />
           </motion.div>
