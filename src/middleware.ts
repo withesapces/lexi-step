@@ -1,6 +1,7 @@
 // src/middleware.ts
 
 import { withAuth } from "next-auth/middleware";
+import { NextRequest, NextResponse } from "next/server";
 
 export default withAuth(
   {
@@ -8,7 +9,13 @@ export default withAuth(
       signIn: "/auth/login",
     },
     callbacks: {
-      authorized: ({ token }) => {
+      authorized: ({ req, token }) => {
+        // Allow access to the home page without authentication
+        if (req.nextUrl.pathname === "/") {
+          return true;
+        }
+        
+        // Require authentication for other routes
         return !!token;
       },
     },
@@ -16,5 +23,5 @@ export default withAuth(
 );
 
 export const config = {
-  matcher: ["/((?!^$|auth|api/auth|_next|favicon.ico).*)"],
+  matcher: ["/((?!auth|api/auth|_next|favicon.ico).*)"],
 };
