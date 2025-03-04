@@ -1,15 +1,12 @@
-// src/app/components/Navbar.tsx
-
 "use client";
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { FiMenu, FiX, FiEye, FiTrendingUp } from "react-icons/fi";
-import { IoMdBook } from "react-icons/io";
-import { FaRegUser } from "react-icons/fa";
+import { FiMenu, FiX } from "react-icons/fi";
+import { FaSignInAlt, FaUserPlus } from "react-icons/fa";
 
-export default function Navbar() {
+export default function PublicNavbar() {
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
@@ -89,53 +86,27 @@ export default function Navbar() {
           >
             <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3 w-full sm:w-auto items-stretch sm:items-center">
               <motion.div variants={itemVariants} className="w-full sm:w-auto">
-                <Link href="/dashboard" className="block w-full">
+                <Link href="/auth/login" className="block w-full">
                   <motion.div
                     className="font-black bg-pink-400 text-black px-4 py-2 border-3 border-black flex items-center justify-center sm:justify-start space-x-2 transform hover:rotate-2 w-full"
                     whileHover={{ scale: 1.05, y: -3 }}
                     whileTap={{ scale: 0.95 }}
                   >
-                    <FiEye className="text-xl" />
-                    <span>DASHBOARD</span>
+                    <FaSignInAlt className="text-xl" />
+                    <span>CONNEXION</span>
                   </motion.div>
                 </Link>
               </motion.div>
               
               <motion.div variants={itemVariants} className="w-full sm:w-auto">
-                <Link href="/leaderboard" className="block w-full">
+                <Link href="/auth/register" className="block w-full">
                   <motion.div
                     className="font-black bg-purple-400 text-black px-4 py-2 border-3 border-black flex items-center justify-center sm:justify-start space-x-2 transform hover:-rotate-2 w-full"
                     whileHover={{ scale: 1.05, y: -3 }}
                     whileTap={{ scale: 0.95 }}
                   >
-                    <FiTrendingUp className="text-xl" />
-                    <span>CLASSEMENT</span>
-                  </motion.div>
-                </Link>
-              </motion.div>
-
-              <motion.div variants={itemVariants} className="w-full sm:w-auto">
-                <Link href="/library" className="block w-full">
-                  <motion.div
-                    className="font-black bg-orange-400 text-black px-4 py-2 border-3 border-black flex items-center justify-center sm:justify-start space-x-2 transform hover:rotate-2 w-full"
-                    whileHover={{ scale: 1.05, y: -3 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <IoMdBook className="text-xl" />
-                    <span>MES TEXTES</span>
-                  </motion.div>
-                </Link>
-              </motion.div>
-              
-              <motion.div variants={itemVariants} className="w-full sm:w-auto">
-                <Link href="/settings" className="block w-full">
-                  <motion.div
-                    className="font-black bg-cyan-400 text-black px-4 py-2 border-3 border-black flex items-center justify-center sm:justify-start space-x-2 transform hover:rotate-2 w-full"
-                    whileHover={{ scale: 1.05, y: -3 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <FaRegUser className="text-xl" />
-                    <span>PROFIL</span>
+                    <FaUserPlus className="text-xl" />
+                    <span>INSCRIPTION</span>
                   </motion.div>
                 </Link>
               </motion.div>

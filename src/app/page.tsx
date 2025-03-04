@@ -5,8 +5,11 @@ export const dynamic = "force-dynamic";
 
 import { motion } from "framer-motion";
 import Navbar from "./components/Navbar";
+import PublicNavbar from "./components/PublicNavbar";
+import { useSession } from "next-auth/react";
 
 export default function Home() {
+  const { data: session } = useSession();
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -30,7 +33,7 @@ export default function Home() {
 
   return (
     <>
-      <Navbar />
+      {session ? <Navbar /> : <PublicNavbar />}
       <div className="overflow-hidden bg-yellow-300">
         {/* Hero - ATTENTION */}
         <section className="min-h-screen flex items-center relative">
