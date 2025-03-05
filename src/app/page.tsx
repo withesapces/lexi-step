@@ -122,41 +122,126 @@ export default function Home() {
 
         {/* SOLUTION */}
         <section className="py-20 bg-black text-white">
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="max-w-6xl mx-auto px-4"
-          >
-            <h2 className="text-5xl font-black mb-16 text-center">
-              <span className="bg-yellow-300 text-black px-4 py-2 inline-block transform rotate-1">
-                LA SOLUTION : ÉCRITURE = SUPER-POUVOIRS
-              </span>
-            </h2>
-            <div className="grid md:grid-cols-2 gap-8">
-              <motion.div
-                whileHover={{ scale: 1.02, rotate: -1 }}
-                className="p-6 bg-white text-black border-4 border-yellow-300"
-              >
-                <div className="text-3xl mb-4">🧠 Mode Boost Activé</div>
-                <p className="text-xl font-bold">
-                  L'écriture, c'est comme du RedBull pour ton cerveau, mais sans les ailes ni les palpitations.
-                  21 jours = cerveau neuf.
-                </p>
-              </motion.div>
-              <motion.div
-                whileHover={{ scale: 1.02, rotate: 1 }}
-                className="p-6 bg-white text-black border-4 border-yellow-300"
-              >
-                <div className="text-3xl mb-4">🎮 Mode Jeu</div>
-                <p className="text-xl font-bold">
-                  Des challenges quotidiens plus addictifs que les séries Netflix.
-                  Bonus : tu deviens intelligent en même temps.
-                </p>
-              </motion.div>
-            </div>
-          </motion.div>
-        </section>
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="max-w-6xl mx-auto px-4"
+        >
+          <h2 className="text-5xl font-black mb-16 text-center">
+            <span className="bg-yellow-300 text-black px-4 py-2 inline-block transform rotate-1">
+              LA SOLUTION : ÉCRITURE = SUPER-POUVOIRS
+            </span>
+          </h2>
+          <div className="grid md:grid-cols-3 gap-8">
+            <motion.div
+              whileHover={{ scale: 1.02, rotate: -1 }}
+              className="p-6 bg-white text-black border-4 border-yellow-300"
+            >
+              <div className="text-3xl mb-4">🎛️ Personnalisation Ultime</div>
+              <p className="text-xl font-bold">
+                Choisis ta dose quotidienne : 100, 300 ou 500 mots.
+                Ton cerveau, tes règles, ton rythme !
+              </p>
+            </motion.div>
+            <motion.div
+              whileHover={{ scale: 1.02, rotate: 1 }}
+              className="p-6 bg-white text-black border-4 border-yellow-300"
+            >
+              <div className="text-3xl mb-4">🏆 Gamification Addictive</div>
+              <p className="text-xl font-bold">
+                Gagne des badges, grimpe dans le classement.
+                Transforme l'écriture en jeu vidéo mental.
+              </p>
+            </motion.div>
+            <motion.div
+              whileHover={{ scale: 1.02, rotate: -1 }}
+              className="p-6 bg-white text-black border-4 border-yellow-300"
+            >
+              <div className="text-3xl mb-4">📊 Traqueur de Mood</div>
+              <p className="text-xl font-bold">
+                Mesure ton évolution mentale.
+                Ton humeur devient une science, pas un mystère.
+              </p>
+            </motion.div>
+          </div>
+        </motion.div>
+      </section>
+
+      <section className="py-20 bg-white">
+  <motion.div
+    initial={{ opacity: 0 }}
+    whileInView={{ opacity: 1 }}
+    viewport={{ once: true }}
+    className="max-w-6xl mx-auto px-4"
+  >
+    <h2 className="text-5xl font-black mb-16 text-center transform -rotate-1">
+      <span className="bg-black text-white px-4 py-2 inline-block">
+        LA SCIENCE DERRIÈRE L'ÉCRITURE MIRACULEUSE
+      </span>
+    </h2>
+
+    <div className="grid md:grid-cols-2 gap-8">
+      <motion.div
+        whileHover={{ scale: 1.02, rotate: -1 }}
+        className="p-6 bg-yellow-300 border-4 border-black"
+      >
+        <div className="text-3xl mb-4">🧪 Preuves Scientifiques</div>
+        <p className="text-xl font-bold">
+          Des études de Harvard, Stanford et MIT démontrent que le journaling :
+        </p>
+        <ul className="list-disc list-inside text-lg mt-4 space-y-2">
+          <li>Réduit le stress de 30% en moyenne</li>
+          <li>Améliore la mémoire et la concentration</li>
+          <li>Booste le système immunitaire</li>
+          <li>Accélère la guérison émotionnelle</li>
+        </ul>
+      </motion.div>
+
+      <motion.div
+        whileHover={{ scale: 1.02, rotate: 1 }}
+        className="p-6 bg-purple-400 border-4 border-black text-white"
+      >
+        <div className="text-3xl mb-4">🧠 Impact Neurologique</div>
+        <p className="text-xl font-bold">
+          Ce qui se passe dans ton cerveau quand tu écris :
+        </p>
+        <ul className="list-disc list-inside text-lg mt-4 space-y-2">
+          <li>Activation des zones de traitement émotionnel</li>
+          <li>Libération de dopamine et sérotonine</li>
+          <li>Création de nouvelles connexions neuronales</li>
+          <li>Réduction de l'activité de l'amygdale (zone du stress)</li>
+        </ul>
+      </motion.div>
+    </div>
+
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      className="mt-12 bg-black text-white p-8 text-center"
+    >
+      <p className="text-2xl font-bold mb-4">
+        Le journaling : Plus qu'une mode, un outil scientifiquement prouvé
+      </p>
+      <p className="text-xl">
+        Une méta-analyse de plus de 300 études montre que l'écriture régulière 
+        peut améliorer la santé mentale, la performance cognitive et le bien-être 
+        émotionnel de manière significative et mesurable.
+      </p>
+    </motion.div>
+
+    <motion.div
+      whileHover={{ scale: 1.01 }}
+      className="mt-12 bg-red-500 text-white p-6 text-center border-4 border-black"
+    >
+      <p className="text-2xl font-black mb-4">🚨 ATTENTION : PAS UNE THÉRAPIE</p>
+      <p className="text-xl font-bold">
+        Notre méthode n'est PAS un substitut à un suivi psychologique professionnel. 
+        C'est un outil de développement personnel, pas un traitement médical.
+      </p>
+    </motion.div>
+  </motion.div>
+</section>
 
         {/* Social Proof - DÉSIR */}
         <section className="py-20 bg-gradient-to-r from-purple-400 via-yellow-300 to-green-400">
@@ -234,6 +319,67 @@ export default function Home() {
               </motion.div>
             </div>
 
+          </motion.div>
+        </section>
+
+        {/* PRICING SECTION */}
+        <section className="py-20 bg-white">
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            className="max-w-6xl mx-auto px-4"
+          >
+            <h2 className="text-5xl font-black mb-16 text-center transform -rotate-1">
+              <span className="bg-black text-white px-4 py-2 inline-block">
+                CHOISIS TON PLAN DE TRANSFORMATION
+              </span>
+            </h2>
+            
+            <div className="grid md:grid-cols-2 gap-8">
+              <motion.div
+                whileHover={{ scale: 1.02, rotate: -1 }}
+                className="p-6 bg-green-400 border-4 border-black"
+              >
+                <h3 className="text-3xl font-black mb-4">🚀 ESSAI GRATUIT</h3>
+                <div className="text-4xl font-black mb-4">
+                  21 JOURS OFFERTS
+                </div>
+                <p className="text-xl font-bold mb-4">
+                  Aucune carte bleue requise. Transforme ton cerveau sans risque.
+                </p>
+                <ul className="list-disc list-inside text-lg mb-6">
+                  <li>Accès illimité aux challenges</li>
+                  <li>Suivi personnalisé</li>
+                  <li>Communauté exclusive</li>
+                </ul>
+                <div className="text-sm font-bold bg-black text-white p-2 inline-block">
+                  SEULEMENT 7 PLACES GRATUITES RESTANTES
+                </div>
+              </motion.div>
+              
+              <motion.div
+                whileHover={{ scale: 1.02, rotate: 1 }}
+                className="p-6 bg-purple-400 border-4 border-black"
+              >
+                <h3 className="text-3xl font-black mb-4">🧠 MODE PRO</h3>
+                <div className="text-4xl font-black mb-4">
+                  2,99€ / MOIS
+                </div>
+                <p className="text-xl font-bold mb-4">
+                  Moins de 0,74€ par semaine. Moins cher qu'un café !
+                </p>
+                <ul className="list-disc list-inside text-lg mb-6">
+                  <li>Tous les avantages de l'essai</li>
+                  <li>Coaching personnalisé</li>
+                  <li>Matériel exclusif</li>
+                  <li>Mise à jour hebdomadaire</li>
+                </ul>
+                <div className="text-sm font-bold bg-black text-white p-2 inline-block">
+                  ANNULATION À TOUT MOMENT
+                </div>
+              </motion.div>
+            </div>
           </motion.div>
         </section>
 

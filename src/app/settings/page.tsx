@@ -2,13 +2,15 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Navbar from "../components/Navbar";
+import { AVAILABLE_AVATARS, Avatar, generateDiceBearAvatar } from "../../config/avatars";
 import BadgeGallery from "../components/BadgeGallery";
 import StyledMoodTracker from "../components/moodboard";
+
 
 interface Stat {
   label: string;
@@ -184,43 +186,209 @@ export default function ProfilePage() {
   const [loadingStats, setLoadingStats] = useState(true);
   const [selectedStat, setSelectedStat] = useState(null);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [selectedAvatar, setSelectedAvatar] = useState<Avatar | null>(null);
+  const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false);
+  const [diceBearAvatar, setDiceBearAvatar] = useState<string | null>(null);
+
+  const avatarSvg = useMemo(() => {
+    if (session?.user?.id) {
+      // Use a consistent seed generation
+      return generateDiceBearAvatar(`${session.user.id}-avatar`);
+    }
+    return null;
+  }, [session?.user?.id]);
 
   // Récupérer les stats et les badges au chargement
   useEffect(() => {
     async function fetchUserData() {
-      try {
-        setLoadingStats(true);
-        // Récupérer les stats
-        const statsRes = await fetch("/api/user/stats");
-        if (statsRes.ok) {
-          const stats = await statsRes.json();
-          setUserStats({
-            streak: stats.currentStreak,
-            totalWords: stats.total,
-            today: stats.today,
-            week: stats.week,
-            month: stats.month
-          });
-          setDailyGoal(stats.dailyGoal);
-        }
+        try {
+            setLoadingStats(true);
+            
+            // Récupérer d'abord l'avatar
+            const avatarRes = await fetch("/api/user/avatar");
+            let avatarData = null;
+            if (avatarRes.ok) {
+                avatarData = await avatarRes.json();
+                console.log("Données de l'avatar récupérées:", avatarData);
 
-        // Récupérer les badges
-        const badgesRes = await fetch("/api/user/badge");
-        if (badgesRes.ok) {
-          const badgesData = await badgesRes.json();
-          setBadges(badgesData);
+                // Trouver l'avatar correspondant
+                const foundAvatar = AVAILABLE_AVATARS.find(a => a.id === avatarData.currentAvatar);
+                if (foundAvatar) {
+                    setSelectedAvatar(foundAvatar);
+                }
+
+                // Mettre à jour l'avatar DiceBear
+                if (avatarData.currentAvatarUrl) {
+                    setDiceBearAvatar(avatarData.currentAvatarUrl);
+                }
+            }
+
+            // Récupérer les statistiques
+            const statsRes = await fetch("/api/user/stats");
+            if (statsRes.ok) {
+                const stats = await statsRes.json();
+                console.log("Données utilisateur récupérées:", stats);
+
+                setUserStats({
+                    streak: stats.currentStreak,
+                    totalWords: stats.total,
+                    today: stats.today,
+                    week: stats.week,
+                    month: stats.month
+                });
+                setDailyGoal(stats.dailyGoal);
+
+                // Récupérer les badges
+                const badgesRes = await fetch("/api/user/badge");
+                if (badgesRes.ok) {
+                    const badgesData = await badgesRes.json();
+                    setBadges(badgesData);
+                }
+            }
+        } catch (error) {
+            console.error("Erreur lors du chargement des données utilisateur:", error);
+        } finally {
+            setLoadingStats(false);
         }
-      } catch (error) {
-        console.error("Erreur lors du chargement des données utilisateur:", error);
-      } finally {
-        setLoadingStats(false);
-      }
     }
 
     if (status === "authenticated") {
-      fetchUserData();
+        fetchUserData();
     }
-  }, [status]);
+}, [status]);
+
+const renderAvatarSection = () => {
+  // Priorité : avatarUrl du serveur > diceBearAvatar > avatar générique
+  const avatarToDisplay = diceBearAvatar || 
+  (selectedAvatar 
+    ? generateDiceBearAvatar(`${session?.user?.id}-${selectedAvatar.id}`) 
+    : null);
+  return (
+    <motion.div
+      whileHover={{ rotate: -5 }}
+      whileTap={{ scale: 0.95 }} // Add this line to reset on tap
+      className="w-48 h-48 bg-white border-8 border-black rounded-none overflow-hidden relative cursor-pointer"
+      onClick={() => setIsAvatarModalOpen(true)}
+    >
+      {avatarToDisplay ? (
+        <div 
+          className="w-full h-full"
+          dangerouslySetInnerHTML={{ __html: avatarToDisplay }}
+        />
+      ) : (
+        <div className={`absolute inset-0 flex items-center justify-center bg-gradient-to-br ${AVAILABLE_AVATARS[0].gradientFrom} ${AVAILABLE_AVATARS[0].gradientTo}`}>
+          <div className="text-4xl">?</div>
+        </div>
+      )}
+    </motion.div>
+  );
+};
+
+const renderAvatarSelectionModal = () => {
+  if (!isAvatarModalOpen) return null;
+
+  const handleSaveAvatar = async () => {
+    if (!selectedAvatar) return;
+
+    try {
+      const response = await fetch("/api/user/avatar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ avatarId: selectedAvatar.id })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Avatar saved successfully:", data);
+        
+        // Mettre à jour l'avatar localement
+        setDiceBearAvatar(data.avatarUrl);
+        
+        // Fermer la modal
+        setIsAvatarModalOpen(false);
+        
+        // Animation de succès
+        setShowConfetti(true);
+        setTimeout(() => setShowConfetti(false), 3000);
+      } else {
+        const errorData = await response.json();
+        console.error("Échec de la sauvegarde de l'avatar", errorData);
+        // Optionnel : afficher un message d'erreur
+      }
+    } catch (error) {
+      console.error("Erreur lors de la sauvegarde de l'avatar:", error);
+    }
+  };
+
+  return (
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center p-4 z-50 overflow-y-auto"
+    >
+      <motion.div 
+        className="bg-white border-4 border-black p-6 w-full max-w-2xl my-8"
+        style={{ boxShadow: "8px 8px 0px #000" }}
+        initial={{ scale: 0.9, rotate: -2 }}
+        animate={{ scale: 1, rotate: 0 }}
+      >
+        <h2 className="text-4xl font-black mb-8 text-center">
+          CHOISIS TON AVATAR 🧠
+        </h2>
+
+        <div className="grid grid-cols-5 gap-4 mb-8">
+          {AVAILABLE_AVATARS.map((avatar) => {
+const svgAvatar = generateDiceBearAvatar(`${session?.user?.id}-${avatar.id}`);
+
+return (
+              <motion.div
+                key={avatar.id}
+                className={`w-full aspect-square border-4 cursor-pointer transition-all 
+                  ${selectedAvatar?.id === avatar.id 
+                    ? 'border-green-500 scale-105' 
+                    : 'border-black hover:border-blue-500'}`}
+                onClick={() => setSelectedAvatar(avatar)}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <div 
+                  className="w-full h-full"
+                  dangerouslySetInnerHTML={{ __html: svgAvatar }}
+                />
+              </motion.div>
+            );
+          })}
+        </div>
+
+        <div className="flex justify-center space-x-4">
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={handleSaveAvatar}
+            disabled={!selectedAvatar}
+            className={`px-6 py-3 border-4 border-black font-black text-white 
+              ${selectedAvatar 
+                ? 'bg-green-500 hover:bg-green-600' 
+                : 'bg-gray-400 cursor-not-allowed'}`}
+          >
+            SAUVEGARDER
+          </motion.button>
+
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setIsAvatarModalOpen(false)}
+            className="px-6 py-3 border-4 border-black font-black bg-red-500 text-white hover:bg-red-600"
+          >
+            ANNULER
+          </motion.button>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+};
+
 
   // Rediriger si non authentifié
   useEffect(() => {
@@ -354,18 +522,8 @@ export default function ProfilePage() {
           >
             <div className="flex flex-col md:flex-row items-start gap-8">
               {/* Avatar avec style brutal */}
-              <motion.div
-                whileHover={{ rotate: -5 }}
-                className="w-48 h-48 bg-white border-8 border-black rounded-none overflow-hidden relative"
-              >
-                <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-pink-400 to-blue-400">
-                  <span className="text-7xl">{user?.name?.charAt(0) || "?"}</span>
-                </div>
-                <div className="absolute top-0 right-0 bg-black text-white text-xs font-black px-2 py-1 transform rotate-12">
-                  {userStats.totalWords > 50000 ? "GÉNIE" :
-                    userStats.totalWords > 20000 ? "PRO" : "NOVICE"}
-                </div>
-              </motion.div>
+              {renderAvatarSection()}
+              {renderAvatarSelectionModal()}
 
               {/* Informations utilisateur */}
               <div className="flex-1">

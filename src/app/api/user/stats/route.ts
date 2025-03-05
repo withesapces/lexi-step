@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
 import { getUserWritingStats } from "@/lib/userStatsService";
+import { AVAILABLE_AVATARS } from "@/src/config/avatars";
 
 export async function GET() {
   try {
@@ -14,9 +15,10 @@ export async function GET() {
       );
     }
     
-    // Trouver l'utilisateur par email
+    // Trouver l'utilisateur par email et récupérer aussi l'avatar
     const user = await prisma.user.findUnique({
-      where: { email: session.user.email }
+      where: { email: session.user.email },
+      select: { id: true, avatar: true }
     });
     
     if (!user) {
@@ -28,8 +30,16 @@ export async function GET() {
     
     // Récupérer les statistiques d'écriture
     const stats = await getUserWritingStats(prisma, user.id);
-    
-    return NextResponse.json(stats);
+
+    // Utiliser le premier avatar par défaut de la configuration si aucun avatar n'est défini
+    const defaultAvatar = AVAILABLE_AVATARS[0].id;
+
+    // Inclure l'avatar dans la réponse
+    return NextResponse.json({
+      ...stats,
+      avatar: user.avatar || defaultAvatar
+    });
+
   } catch (error) {
     console.error("Erreur lors de la récupération des statistiques:", error);
     return NextResponse.json(
