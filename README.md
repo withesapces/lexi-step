@@ -37,7 +37,7 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 
 ## TODO 
 
-
+- Mettre en place le webhook /api/stripe/webhook/route.ts
 - Le streak ne doit pas être pris en compte si l'utilisateur n'a pas atteint son quota journalier (au moment de l'enregistrement d'un writing) 👌
   a. Si un utilisateur modifie son objectif quotidien, ça doit mettre à jour le streak. 👌
   b. Si un utilisateur ne se connecte pas et perds sa streak, il ne faut pas attendre qu'il publie une nouvelle entrée pour mettre à jour sa streak
@@ -51,39 +51,87 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 - LEXISTEP
   - lib
     - prisma.ts
+    - auth.ts
+    - prisma.ts
+    - streakUtils.ts
+    - userStatsService.ts
   - prisma
     - schema.prisma
     - migrations
-  - app
-    - api
+  - public
+    - file.svg
+    - globe.svg
+  - src
+    - config
+      - avatars.ts
+      - moods.ts
+    - app
+      - api
+        - auth
+          - [...nextauth]
+            - route.ts
+          - check-username
+            - route.ts
+          - login
+            - route.ts
+          - register
+            - route.ts
+        - leaderboard
+          - route.ts
+        - stats
+          - community
+            - route.ts
+        - user
+          - avatar
+            - route.ts
+          - badge
+            - route.ts
+          - mood
+            - route.ts
+          - settings
+            - route.ts
+          - stats
+            - route.ts
+        - writing
+          - freewrite
+            - route.ts
+        - writing-entries
+          - [id]
+            - route.ts
+          - route.ts
       - auth
         - login
-          - route.ts
+          - page.tsx
         - register
-          - route.ts
-    - auth
-      - [...nextauth]
-        - route.ts
-      - login
+          - page.tsx
+      - components
+        - templates
+          - writingGameTemplate.tsx
+        - BadgeGallery.tsx
+        - CommuncityStats.tsx
+        - GameModeSlider.tsx
+        - moodboard.tsx
+        - MoodSelector.tsx
+        - Navbar.tsx
+        - PublicNavbar.tsx
+      - account
         - page.tsx
-      - register
+      - dashboard
         - page.tsx
-    - components
-      - Navbar.tsx
-    - settings
-      - page.tsx
-    - account
-      - page.tsx
-  - middleware.ts
-  - globals.css
-  - layout.tsx
-  - page.tsx (le carnet d'écriture)
-  - next-auth.d.ts
-  - providers.tsx
-  - public
-  - node_modules
+      - leaderboard
+        - page.tsx
+      - library
+        - page.ts
+      - settings
+        - page.tsx
+      - favicon.ico
+      - globals.css
+      - layout.tsx
+      - next-auth.d.ts
+      - page.tsx (la landing page de l'application)
+      - providers.tsx
+    - middleware.ts
   - .gitignore
-  - favicon.ico
   - next-env.d.ts
   - next.config.ts
   - package-lock.json
@@ -92,3 +140,5 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
   - README.md
   - tailwind.config.ts
   - tsconfig.json
+  - node_modules
+    - ...

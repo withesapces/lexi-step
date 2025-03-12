@@ -10,6 +10,8 @@ import Navbar from "../components/Navbar";
 import { AVAILABLE_AVATARS, Avatar, generateDiceBearAvatar } from "../../config/avatars";
 import BadgeGallery from "../components/BadgeGallery";
 import StyledMoodTracker from "../components/moodboard";
+import { SubscriptionButton } from 'src/app/components/SubscriptionButton';
+import { getUserSubscriptionPlan } from "@/lib/subscription";
 
 
 interface Stat {
@@ -190,6 +192,11 @@ export default function ProfilePage() {
   const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false);
   const [diceBearAvatar, setDiceBearAvatar] = useState<string | null>(null);
 
+  const [subscription, setSubscription] = useState(null); // ✅ Ajoute un état local
+  const [loadingSubscription, setLoadingSubscription] = useState(true); 
+
+
+
   const avatarSvg = useMemo(() => {
     if (session?.user?.id) {
       // Use a consistent seed generation
@@ -197,6 +204,13 @@ export default function ProfilePage() {
     }
     return null;
   }, [session?.user?.id]);
+
+    // Rediriger si non authentifié
+    useEffect(() => {
+      if (status === "unauthenticated") {
+        router.push("/auth/login");
+      }
+    }, [status, router]);
 
   // Récupérer les stats et les badges au chargement
   useEffect(() => {
@@ -255,147 +269,166 @@ export default function ProfilePage() {
     if (status === "authenticated") {
         fetchUserData();
     }
-}, [status]);
+  }, [status]);
 
-const renderAvatarSection = () => {
-  // Priorité : avatarUrl du serveur > diceBearAvatar > avatar générique
-  const avatarToDisplay = diceBearAvatar || 
-  (selectedAvatar 
-    ? generateDiceBearAvatar(`${session?.user?.id}-${selectedAvatar.id}`) 
-    : null);
-  return (
-    <motion.div
-      whileHover={{ rotate: -5 }}
-      whileTap={{ scale: 0.95 }} // Add this line to reset on tap
-      className="w-48 h-48 bg-white border-8 border-black rounded-none overflow-hidden relative cursor-pointer"
-      onClick={() => setIsAvatarModalOpen(true)}
-    >
-      {avatarToDisplay ? (
-        <div 
-          className="w-full h-full"
-          dangerouslySetInnerHTML={{ __html: avatarToDisplay }}
-        />
-      ) : (
-        <div className={`absolute inset-0 flex items-center justify-center bg-gradient-to-br ${AVAILABLE_AVATARS[0].gradientFrom} ${AVAILABLE_AVATARS[0].gradientTo}`}>
-          <div className="text-4xl">?</div>
-        </div>
-      )}
-    </motion.div>
-  );
-};
 
-const renderAvatarSelectionModal = () => {
-  if (!isAvatarModalOpen) return null;
-
-  const handleSaveAvatar = async () => {
-    if (!selectedAvatar) return;
-
-    try {
-      const response = await fetch("/api/user/avatar", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ avatarId: selectedAvatar.id })
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        console.log("Avatar saved successfully:", data);
-        
-        // Mettre à jour l'avatar localement
-        setDiceBearAvatar(data.avatarUrl);
-        
-        // Fermer la modal
-        setIsAvatarModalOpen(false);
-        
-        // Animation de succès
-        setShowConfetti(true);
-        setTimeout(() => setShowConfetti(false), 3000);
-      } else {
-        const errorData = await response.json();
-        console.error("Échec de la sauvegarde de l'avatar", errorData);
-        // Optionnel : afficher un message d'erreur
+  useEffect(() => {
+    async function fetchSubscription() {
+      try {
+        const res = await fetch("/api/stripe/subscription"); // ✅ Appel à l'API route
+        if (res.ok) {
+          const sub = await res.json();
+          setSubscription(sub);
+        } else {
+          console.error("Erreur API abonnement :", await res.text());
+        }
+      } catch (error) {
+        console.error("Erreur de chargement de l'abonnement :", error);
+      } finally {
+        setLoadingSubscription(false);
       }
-    } catch (error) {
-      console.error("Erreur lors de la sauvegarde de l'avatar:", error);
     }
+
+    if (status === "authenticated") {
+      fetchSubscription();
+    }
+  }, [status]);
+
+  if (status === "loading" || loadingSubscription) {
+    return <div>Chargement...</div>; // ✅ Gère le chargement
+  }
+
+  const renderAvatarSection = () => {
+    // Priorité : avatarUrl du serveur > diceBearAvatar > avatar générique
+    const avatarToDisplay = diceBearAvatar || 
+    (selectedAvatar 
+      ? generateDiceBearAvatar(`${session?.user?.id}-${selectedAvatar.id}`) 
+      : null);
+    return (
+      <motion.div
+        whileHover={{ rotate: -5 }}
+        whileTap={{ scale: 0.95 }}
+        className="w-48 h-48 bg-white border-8 border-black rounded-none overflow-hidden relative cursor-pointer"
+        onClick={() => setIsAvatarModalOpen(true)}
+      >
+        {avatarToDisplay ? (
+          <div 
+            className="w-full h-full"
+            dangerouslySetInnerHTML={{ __html: avatarToDisplay }}
+          />
+        ) : (
+          <div className={`absolute inset-0 flex items-center justify-center bg-gradient-to-br ${AVAILABLE_AVATARS[0].gradientFrom} ${AVAILABLE_AVATARS[0].gradientTo}`}>
+            <div className="text-4xl">?</div>
+          </div>
+        )}
+      </motion.div>
+    );
   };
 
-  return (
-    <motion.div 
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center p-4 z-50 overflow-y-auto"
-    >
+  const renderAvatarSelectionModal = () => {
+    if (!isAvatarModalOpen) return null;
+
+    const handleSaveAvatar = async () => {
+      if (!selectedAvatar) return;
+
+      try {
+        const response = await fetch("/api/user/avatar", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ avatarId: selectedAvatar.id })
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log("Avatar saved successfully:", data);
+          
+          // Mettre à jour l'avatar localement
+          setDiceBearAvatar(data.avatarUrl);
+          
+          // Fermer la modal
+          setIsAvatarModalOpen(false);
+          
+          // Animation de succès
+          setShowConfetti(true);
+          setTimeout(() => setShowConfetti(false), 3000);
+        } else {
+          const errorData = await response.json();
+          console.error("Échec de la sauvegarde de l'avatar", errorData);
+          // Optionnel : afficher un message d'erreur
+        }
+      } catch (error) {
+        console.error("Erreur lors de la sauvegarde de l'avatar:", error);
+      }
+    };
+
+    return (
       <motion.div 
-        className="bg-white border-4 border-black p-6 w-full max-w-2xl my-8"
-        style={{ boxShadow: "8px 8px 0px #000" }}
-        initial={{ scale: 0.9, rotate: -2 }}
-        animate={{ scale: 1, rotate: 0 }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center p-4 z-50 overflow-y-auto"
       >
-        <h2 className="text-4xl font-black mb-8 text-center">
-          CHOISIS TON AVATAR 🧠
-        </h2>
+        <motion.div 
+          className="bg-white border-4 border-black p-6 w-full max-w-2xl my-8"
+          style={{ boxShadow: "8px 8px 0px #000" }}
+          initial={{ scale: 0.9, rotate: -2 }}
+          animate={{ scale: 1, rotate: 0 }}
+        >
+          <h2 className="text-4xl font-black mb-8 text-center">
+            CHOISIS TON AVATAR 🧠
+          </h2>
 
-        <div className="grid grid-cols-5 gap-4 mb-8">
-          {AVAILABLE_AVATARS.map((avatar) => {
-const svgAvatar = generateDiceBearAvatar(`${session?.user?.id}-${avatar.id}`);
+          <div className="grid grid-cols-5 gap-4 mb-8">
+            {AVAILABLE_AVATARS.map((avatar) => {
+  const svgAvatar = generateDiceBearAvatar(`${session?.user?.id}-${avatar.id}`);
 
-return (
-              <motion.div
-                key={avatar.id}
-                className={`w-full aspect-square border-4 cursor-pointer transition-all 
-                  ${selectedAvatar?.id === avatar.id 
-                    ? 'border-green-500 scale-105' 
-                    : 'border-black hover:border-blue-500'}`}
-                onClick={() => setSelectedAvatar(avatar)}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <div 
-                  className="w-full h-full"
-                  dangerouslySetInnerHTML={{ __html: svgAvatar }}
-                />
-              </motion.div>
-            );
-          })}
-        </div>
+  return (
+                <motion.div
+                  key={avatar.id}
+                  className={`w-full aspect-square border-4 cursor-pointer transition-all 
+                    ${selectedAvatar?.id === avatar.id 
+                      ? 'border-green-500 scale-105' 
+                      : 'border-black hover:border-blue-500'}`}
+                  onClick={() => setSelectedAvatar(avatar)}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <div 
+                    className="w-full h-full"
+                    dangerouslySetInnerHTML={{ __html: svgAvatar }}
+                  />
+                </motion.div>
+              );
+            })}
+          </div>
 
-        <div className="flex justify-center space-x-4">
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={handleSaveAvatar}
-            disabled={!selectedAvatar}
-            className={`px-6 py-3 border-4 border-black font-black text-white 
-              ${selectedAvatar 
-                ? 'bg-green-500 hover:bg-green-600' 
-                : 'bg-gray-400 cursor-not-allowed'}`}
-          >
-            SAUVEGARDER
-          </motion.button>
+          <div className="flex justify-center space-x-4">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={handleSaveAvatar}
+              disabled={!selectedAvatar}
+              className={`px-6 py-3 border-4 border-black font-black text-white 
+                ${selectedAvatar 
+                  ? 'bg-green-500 hover:bg-green-600' 
+                  : 'bg-gray-400 cursor-not-allowed'}`}
+            >
+              SAUVEGARDER
+            </motion.button>
 
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => setIsAvatarModalOpen(false)}
-            className="px-6 py-3 border-4 border-black font-black bg-red-500 text-white hover:bg-red-600"
-          >
-            ANNULER
-          </motion.button>
-        </div>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setIsAvatarModalOpen(false)}
+              className="px-6 py-3 border-4 border-black font-black bg-red-500 text-white hover:bg-red-600"
+            >
+              ANNULER
+            </motion.button>
+          </div>
+        </motion.div>
       </motion.div>
-    </motion.div>
-  );
-};
-
-
-  // Rediriger si non authentifié
-  useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/auth/login");
-    }
-  }, [status, router]);
+    );
+  };
 
   const handleSubmit = async (e: { preventDefault: () => void; }) => {
     e.preventDefault();
@@ -734,6 +767,22 @@ return (
 
             <StyledMoodTracker />
           </motion.div>
+        </section>
+
+        {/* Gestion de l'abonnement */}
+        <section className="py16 bg-black text-white">
+        <h2 className="text-xl font-semibold mb-4">Abonnement</h2>
+
+            <p className="text-gray-700 mb-1">
+              Statut: <span className="font-medium">{subscription.isPro ? 'Pro' : 'Gratuit'}</span>
+            </p>
+            {subscription.isPro && (
+              <p className="text-sm text-gray-500">
+                Votre abonnement se renouvellera le{' '}
+                {new Date(subscription.stripeCurrentPeriodEnd!).toLocaleDateString('fr-FR')}
+              </p>
+            )}
+          <SubscriptionButton isPro={subscription.isPro} />
         </section>
 
         {/* Section déconnexion */}
