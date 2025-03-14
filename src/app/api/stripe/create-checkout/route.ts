@@ -31,7 +31,7 @@ export async function POST(req: Request) {
     if (user.isPro && user.subscription?.stripeCustomerId) {
       const stripeSession = await stripe.billingPortal.sessions.create({
         customer: user.subscription.stripeCustomerId,
-        return_url: absoluteUrl('/account'),
+        return_url: absoluteUrl('/settings'),
       });
 
       return NextResponse.json({ url: stripeSession.url });

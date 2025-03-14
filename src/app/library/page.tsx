@@ -379,7 +379,7 @@ export default function MyLibrary() {
   return (
     <div className="min-h-screen overflow-hidden bg-yellow-300">
       <Navbar />
-      <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-20 pointer-events-none" />
+      <div className="absolute inset-0 opacity-20 pointer-events-none" />
 
       {/* Hero Section */}
       <section className="pt-12 pb-8 px-4">

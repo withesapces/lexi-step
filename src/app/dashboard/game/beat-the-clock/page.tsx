@@ -201,7 +201,7 @@ export default function SpeedWritingGame() {
     <>
       <Navbar />
       <div className={`min-h-screen ${darkMode ? "bg-gray-900 text-white" : "bg-purple-300"}`}>
-        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-20 pointer-events-none" />
+        <div className="absolute inset-0 opacity-20 pointer-events-none" />
 
         {/* Header avec compteur d'objectif et bouton quitter */}
         <motion.div className="max-w-4xl mx-auto pt-8 px-4">

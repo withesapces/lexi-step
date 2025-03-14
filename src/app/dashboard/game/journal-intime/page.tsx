@@ -139,7 +139,7 @@ export default function JournalIntimeGame() {
     <>
       <Navbar />
       <div className={`min-h-screen ${darkMode ? "bg-gray-900 text-white" : "bg-pink-400"}`}>
-        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-20 pointer-events-none" />
+        <div className="absolute inset-0 opacity-20 pointer-events-none" />
         
         {/* Header */}
         <motion.div

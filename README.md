@@ -54,6 +54,8 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
     - auth.ts
     - prisma.ts
     - streakUtils.ts
+    - stripe.ts
+    - subscription.ts
     - userStatsService.ts
   - prisma
     - schema.prisma
@@ -80,6 +82,11 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
           - route.ts
         - stats
           - community
+            - route.ts
+        - stripe
+          - create-checkout
+            - route.ts
+          - subscription
             - route.ts
         - user
           - avatar
@@ -114,6 +121,7 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
         - MoodSelector.tsx
         - Navbar.tsx
         - PublicNavbar.tsx
+        - SubscriptionButton.tsx
       - account
         - page.tsx
       - dashboard

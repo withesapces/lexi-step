@@ -12,6 +12,7 @@ import BadgeGallery from "../components/BadgeGallery";
 import StyledMoodTracker from "../components/moodboard";
 import { SubscriptionButton } from 'src/app/components/SubscriptionButton';
 import { getUserSubscriptionPlan } from "@/lib/subscription";
+import toast from "react-hot-toast";
 
 
 interface Stat {
@@ -29,10 +30,10 @@ interface StatCardPopupProps {
 
 const StatCardPopup = ({ stat, isOpen, onClose }: StatCardPopupProps) => {
   if (!isOpen || !stat) return null;
-  
+
   // Définition du contenu spécifique à chaque type de statistique
   const getPopupContent = () => {
-    switch(stat.label) {
+    switch (stat.label) {
       case "NIVEAU CÉRÉBRAL":
         return {
           icon: "🧠",
@@ -89,17 +90,17 @@ const StatCardPopup = ({ stat, isOpen, onClose }: StatCardPopupProps) => {
         };
     }
   };
-  
+
   const content = getPopupContent();
-  
+
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center p-4 z-50 overflow-y-auto"
     >
-      <motion.div 
+      <motion.div
         className="bg-white border-4 border-black p-6 w-full max-w-2xl my-8"
         style={{ boxShadow: "8px 8px 0px #000" }}
         initial={{ scale: 0.9, rotate: -2 }}
@@ -117,7 +118,7 @@ const StatCardPopup = ({ stat, isOpen, onClose }: StatCardPopupProps) => {
             X
           </motion.button>
         </div>
-        
+
         <div className="text-center mb-6">
           <div className="text-6xl mb-4">{content.icon}</div>
           <h2 className="text-4xl font-black mb-4 transform -rotate-1">
@@ -129,13 +130,13 @@ const StatCardPopup = ({ stat, isOpen, onClose }: StatCardPopupProps) => {
             {content.description}
           </p>
         </div>
-        
+
         <div className="bg-gray-100 border-4 border-black p-4 mb-6">
           <h3 className="text-xl font-black mb-4">NIVEAU ACTUEL: {content.currentValue}</h3>
-          
+
           <div className="space-y-4">
             {content.details.map((level, index) => (
-              <div 
+              <div
                 key={index}
                 className={`p-3 border-2 border-black ${content.currentValue === level.label ? `${stat.color} border-4` : 'bg-white'}`}
               >
@@ -148,14 +149,14 @@ const StatCardPopup = ({ stat, isOpen, onClose }: StatCardPopupProps) => {
             ))}
           </div>
         </div>
-        
+
         <div className="bg-yellow-100 border-4 border-black p-4 mb-6">
           <h3 className="text-lg font-black mb-2">💡 ASTUCE DE GÉNIE</h3>
           <p className="font-bold">
             {content.tip}
           </p>
         </div>
-        
+
         <div className="flex justify-center">
           <motion.button
             whileHover={{ scale: 1.05, rotate: 1 }}
@@ -193,7 +194,7 @@ export default function ProfilePage() {
   const [diceBearAvatar, setDiceBearAvatar] = useState<string | null>(null);
 
   const [subscription, setSubscription] = useState(null); // ✅ Ajoute un état local
-  const [loadingSubscription, setLoadingSubscription] = useState(true); 
+  const [loadingSubscription, setLoadingSubscription] = useState(true);
 
 
 
@@ -205,69 +206,69 @@ export default function ProfilePage() {
     return null;
   }, [session?.user?.id]);
 
-    // Rediriger si non authentifié
-    useEffect(() => {
-      if (status === "unauthenticated") {
-        router.push("/auth/login");
-      }
-    }, [status, router]);
+  // Rediriger si non authentifié
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/auth/login");
+    }
+  }, [status, router]);
 
   // Récupérer les stats et les badges au chargement
   useEffect(() => {
     async function fetchUserData() {
-        try {
-            setLoadingStats(true);
-            
-            // Récupérer d'abord l'avatar
-            const avatarRes = await fetch("/api/user/avatar");
-            let avatarData = null;
-            if (avatarRes.ok) {
-                avatarData = await avatarRes.json();
-                console.log("Données de l'avatar récupérées:", avatarData);
+      try {
+        setLoadingStats(true);
 
-                // Trouver l'avatar correspondant
-                const foundAvatar = AVAILABLE_AVATARS.find(a => a.id === avatarData.currentAvatar);
-                if (foundAvatar) {
-                    setSelectedAvatar(foundAvatar);
-                }
+        // Récupérer d'abord l'avatar
+        const avatarRes = await fetch("/api/user/avatar");
+        let avatarData = null;
+        if (avatarRes.ok) {
+          avatarData = await avatarRes.json();
+          console.log("Données de l'avatar récupérées:", avatarData);
 
-                // Mettre à jour l'avatar DiceBear
-                if (avatarData.currentAvatarUrl) {
-                    setDiceBearAvatar(avatarData.currentAvatarUrl);
-                }
-            }
+          // Trouver l'avatar correspondant
+          const foundAvatar = AVAILABLE_AVATARS.find(a => a.id === avatarData.currentAvatar);
+          if (foundAvatar) {
+            setSelectedAvatar(foundAvatar);
+          }
 
-            // Récupérer les statistiques
-            const statsRes = await fetch("/api/user/stats");
-            if (statsRes.ok) {
-                const stats = await statsRes.json();
-                console.log("Données utilisateur récupérées:", stats);
-
-                setUserStats({
-                    streak: stats.currentStreak,
-                    totalWords: stats.total,
-                    today: stats.today,
-                    week: stats.week,
-                    month: stats.month
-                });
-                setDailyGoal(stats.dailyGoal);
-
-                // Récupérer les badges
-                const badgesRes = await fetch("/api/user/badge");
-                if (badgesRes.ok) {
-                    const badgesData = await badgesRes.json();
-                    setBadges(badgesData);
-                }
-            }
-        } catch (error) {
-            console.error("Erreur lors du chargement des données utilisateur:", error);
-        } finally {
-            setLoadingStats(false);
+          // Mettre à jour l'avatar DiceBear
+          if (avatarData.currentAvatarUrl) {
+            setDiceBearAvatar(avatarData.currentAvatarUrl);
+          }
         }
+
+        // Récupérer les statistiques
+        const statsRes = await fetch("/api/user/stats");
+        if (statsRes.ok) {
+          const stats = await statsRes.json();
+          console.log("Données utilisateur récupérées:", stats);
+
+          setUserStats({
+            streak: stats.currentStreak,
+            totalWords: stats.total,
+            today: stats.today,
+            week: stats.week,
+            month: stats.month
+          });
+          setDailyGoal(stats.dailyGoal);
+
+          // Récupérer les badges
+          const badgesRes = await fetch("/api/user/badge");
+          if (badgesRes.ok) {
+            const badgesData = await badgesRes.json();
+            setBadges(badgesData);
+          }
+        }
+      } catch (error) {
+        console.error("Erreur lors du chargement des données utilisateur:", error);
+      } finally {
+        setLoadingStats(false);
+      }
     }
 
     if (status === "authenticated") {
-        fetchUserData();
+      fetchUserData();
     }
   }, [status]);
 
@@ -275,9 +276,10 @@ export default function ProfilePage() {
   useEffect(() => {
     async function fetchSubscription() {
       try {
-        const res = await fetch("/api/stripe/subscription"); // ✅ Appel à l'API route
+        const res = await fetch("/api/stripe/subscription");
         if (res.ok) {
           const sub = await res.json();
+          console.log("Données d'abonnement reçues:", sub); // Ajoutez ce log pour déboguer
           setSubscription(sub);
         } else {
           console.error("Erreur API abonnement :", await res.text());
@@ -298,12 +300,48 @@ export default function ProfilePage() {
     return <div>Chargement...</div>; // ✅ Gère le chargement
   }
 
+  async function handleResubscribe() {
+    try {
+      setLoading(true);
+
+      const response = await fetch("/api/stripe/resubscribe", {
+        method: "POST",
+      });
+
+      if (!response.ok) {
+        throw new Error("Échec de la reprise d'abonnement");
+      }
+
+      const data = await response.json();
+
+      // Rediriger vers le portail Stripe si une URL est fournie
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        // Afficher un message de succès si aucune URL n'est fournie
+        toast.success("Votre abonnement a été réactivé avec succès!");
+
+        // Actualiser les informations d'abonnement
+        const res = await fetch("/api/stripe/subscription");
+        if (res.ok) {
+          const sub = await res.json();
+          setSubscription(sub);
+        }
+      }
+    } catch (error) {
+      console.error("Erreur lors de la reprise d'abonnement:", error);
+      toast.error("Impossible de reprendre l'abonnement. Veuillez réessayer.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   const renderAvatarSection = () => {
     // Priorité : avatarUrl du serveur > diceBearAvatar > avatar générique
-    const avatarToDisplay = diceBearAvatar || 
-    (selectedAvatar 
-      ? generateDiceBearAvatar(`${session?.user?.id}-${selectedAvatar.id}`) 
-      : null);
+    const avatarToDisplay = diceBearAvatar ||
+      (selectedAvatar
+        ? generateDiceBearAvatar(`${session?.user?.id}-${selectedAvatar.id}`)
+        : null);
     return (
       <motion.div
         whileHover={{ rotate: -5 }}
@@ -312,7 +350,7 @@ export default function ProfilePage() {
         onClick={() => setIsAvatarModalOpen(true)}
       >
         {avatarToDisplay ? (
-          <div 
+          <div
             className="w-full h-full"
             dangerouslySetInnerHTML={{ __html: avatarToDisplay }}
           />
@@ -341,13 +379,13 @@ export default function ProfilePage() {
         if (response.ok) {
           const data = await response.json();
           console.log("Avatar saved successfully:", data);
-          
+
           // Mettre à jour l'avatar localement
           setDiceBearAvatar(data.avatarUrl);
-          
+
           // Fermer la modal
           setIsAvatarModalOpen(false);
-          
+
           // Animation de succès
           setShowConfetti(true);
           setTimeout(() => setShowConfetti(false), 3000);
@@ -362,13 +400,13 @@ export default function ProfilePage() {
     };
 
     return (
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center p-4 z-50 overflow-y-auto"
       >
-        <motion.div 
+        <motion.div
           className="bg-white border-4 border-black p-6 w-full max-w-2xl my-8"
           style={{ boxShadow: "8px 8px 0px #000" }}
           initial={{ scale: 0.9, rotate: -2 }}
@@ -380,20 +418,20 @@ export default function ProfilePage() {
 
           <div className="grid grid-cols-5 gap-4 mb-8">
             {AVAILABLE_AVATARS.map((avatar) => {
-  const svgAvatar = generateDiceBearAvatar(`${session?.user?.id}-${avatar.id}`);
+              const svgAvatar = generateDiceBearAvatar(`${session?.user?.id}-${avatar.id}`);
 
-  return (
+              return (
                 <motion.div
                   key={avatar.id}
                   className={`w-full aspect-square border-4 cursor-pointer transition-all 
-                    ${selectedAvatar?.id === avatar.id 
-                      ? 'border-green-500 scale-105' 
+                    ${selectedAvatar?.id === avatar.id
+                      ? 'border-green-500 scale-105'
                       : 'border-black hover:border-blue-500'}`}
                   onClick={() => setSelectedAvatar(avatar)}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  <div 
+                  <div
                     className="w-full h-full"
                     dangerouslySetInnerHTML={{ __html: svgAvatar }}
                   />
@@ -409,8 +447,8 @@ export default function ProfilePage() {
               onClick={handleSaveAvatar}
               disabled={!selectedAvatar}
               className={`px-6 py-3 border-4 border-black font-black text-white 
-                ${selectedAvatar 
-                  ? 'bg-green-500 hover:bg-green-600' 
+                ${selectedAvatar
+                  ? 'bg-green-500 hover:bg-green-600'
                   : 'bg-gray-400 cursor-not-allowed'}`}
             >
               SAUVEGARDER
@@ -482,12 +520,12 @@ export default function ProfilePage() {
     },
     {
       label: "NIVEAU CÉRÉBRAL",
-      value: userStats.totalWords > 100000 ? "LÉGENDAIRE" : 
-             userStats.totalWords > 50000 ? "GÉNIE" : 
-             userStats.totalWords > 20000 ? "PRO" : 
-             userStats.totalWords > 10000 ? "AVANCÉ" : 
-             userStats.totalWords > 5000 ? "INTERMÉDIAIRE" : 
-             "DÉBUTANT",
+      value: userStats.totalWords > 100000 ? "LÉGENDAIRE" :
+        userStats.totalWords > 50000 ? "GÉNIE" :
+          userStats.totalWords > 20000 ? "PRO" :
+            userStats.totalWords > 10000 ? "AVANCÉ" :
+              userStats.totalWords > 5000 ? "INTERMÉDIAIRE" :
+                "DÉBUTANT",
       icon: "🧠",
       color: "bg-green-400"
     }
@@ -544,7 +582,7 @@ export default function ProfilePage() {
       )}
 
       <div className="relative">
-        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-20 pointer-events-none" />
+        <div className="absolute inset-0 opacity-20 pointer-events-none" />
 
         {/* En-tête du profil */}
         <section className="py-16 relative">
@@ -553,6 +591,7 @@ export default function ProfilePage() {
             animate={{ opacity: 1, y: 0 }}
             className="max-w-5xl mx-auto px-4"
           >
+            <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-20 pointer-events-none" />
             <div className="flex flex-col md:flex-row items-start gap-8">
               {/* Avatar avec style brutal */}
               {renderAvatarSection()}
@@ -600,10 +639,10 @@ export default function ProfilePage() {
                 </div>
 
                 {/* Popup pour les statistiques */}
-                <StatCardPopup 
-                  stat={selectedStat} 
-                  isOpen={isPopupOpen && selectedStat !== null} 
-                  onClose={() => setIsPopupOpen(false)} 
+                <StatCardPopup
+                  stat={selectedStat}
+                  isOpen={isPopupOpen && selectedStat !== null}
+                  onClose={() => setIsPopupOpen(false)}
                 />
               </div>
             </div>
@@ -769,20 +808,107 @@ export default function ProfilePage() {
           </motion.div>
         </section>
 
-        {/* Gestion de l'abonnement */}
-        <section className="py16 bg-black text-white">
-        <h2 className="text-xl font-semibold mb-4">Abonnement</h2>
+        {/* Section d'abonnement - Intégrée au style brutal design */}
+        <section className="py-16 bg-purple-400 border-y-8 border-black">
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            className="max-w-5xl mx-auto px-4"
+          >
+            <h2 className="text-4xl font-black mb-12 text-center transform -rotate-1">
+              <span className="bg-black text-white px-4 py-2 inline-block">
+                🚀 BOOSTER DE CERVEAU
+              </span>
+            </h2>
 
-            <p className="text-gray-700 mb-1">
-              Statut: <span className="font-medium">{subscription.isPro ? 'Pro' : 'Gratuit'}</span>
-            </p>
-            {subscription.isPro && (
-              <p className="text-sm text-gray-500">
-                Votre abonnement se renouvellera le{' '}
-                {new Date(subscription.stripeCurrentPeriodEnd!).toLocaleDateString('fr-FR')}
-              </p>
-            )}
-          <SubscriptionButton isPro={subscription.isPro} />
+            <motion.div
+              whileHover={{ rotate: 1 }}
+              className="p-6 bg-white border-4 border-black relative overflow-hidden"
+            >
+              <div className="absolute -left-4 -top-4 w-16 h-16 bg-purple-500 rounded-full opacity-20" />
+              <div className="absolute -right-8 -bottom-8 w-32 h-32 bg-yellow-300 rounded-full opacity-30" />
+
+              <div className="relative z-10">
+                <h3 className="text-2xl font-black mb-6">💎 TON ABONNEMENT</h3>
+
+                <div className="flex flex-col md:flex-row items-stretch justify-between gap-6 mb-8">
+                  {/* Carte de statut avec rotation et effet de profondeur */}
+                  <div className="bg-black text-white p-6 border-4 border-black transform rotate-1 flex-1 shadow-[8px_8px_0px_#000]">
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="text-2xl">💎</span>
+                      <p className="text-xl font-black">
+                        STATUT: <span className={subscription.isPro ? "text-yellow-300" : "text-gray-400"}>{subscription.isPro ? 'GÉNIE PRO' : 'CERVEAU STANDARD'}</span>
+                      </p>
+                    </div>
+
+                    {subscription.isPro && (
+                      <div className="mt-4">
+                        <p className="font-bold text-pink-400 mb-2">
+                          {subscription.isCanceled
+                            ? "TON CERVEAU VA BIENTÔT RALENTIR!"
+                            : "TON CERVEAU EST EN MODE TURBO JUSQU'AU:"}
+                        </p>
+
+                        <div className="bg-white text-black px-3 py-2 inline-block transform -rotate-2 border-4 border-black">
+                          <p className="text-lg font-black">
+                            {new Date(subscription.stripeCurrentPeriodEnd).toLocaleDateString('fr-FR')}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Bouton d'action correspondant au design brutal */}
+                  <div className="flex-1 flex items-center">
+                    {subscription.isPro && subscription.isCanceled ? (
+                      <motion.button
+                        whileHover={{ scale: 1.05, rotate: 1 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={handleResubscribe}
+                        className="w-full bg-black text-white font-black py-4 px-6 text-xl border-4 border-black hover:bg-yellow-300 hover:text-black transition-all"
+                        style={{ boxShadow: "8px 8px 0px #000" }}
+                      >
+                        RÉACTIVER MON CERVEAU PRO 🧠⚡
+                      </motion.button>
+                    ) : (
+                      <div className="w-full">
+                        <SubscriptionButton
+                          isPro={subscription.isPro}
+                          customClassName="w-full bg-black text-white font-black py-4 px-6 text-xl border-4 border-black hover:bg-yellow-300 hover:text-black transition-all"
+                          style={{ boxShadow: "8px 8px 0px #000" }}
+                        />
+                        {!subscription.isPro && (
+                          <p className="text-center font-bold mt-3 transform rotate-1 text-black">
+                            BOOST TON CERVEAU MAINTENANT!
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Avantages PRO */}
+                <div className="bg-yellow-100 border-4 border-black p-4">
+                  <h4 className="text-xl font-black mb-4">🧠 AVANTAGES CERVEAU PRO</h4>
+                  <ul className="space-y-2">
+                    <li className="flex items-center gap-2">
+                      <span className="text-2xl">⚡</span>
+                      <span className="font-bold">Badges exclusifs pour ton profil</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="text-2xl">⚡</span>
+                      <span className="font-bold">Analyse et tracker de mood</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="text-2xl">⚡</span>
+                      <span className="font-bold">Accès à tous les modes de jeux</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
         </section>
 
         {/* Section déconnexion */}

@@ -132,7 +132,7 @@ export default function GameModePage() {
     <>
       <Navbar />
       <div className="overflow-hidden bg-yellow-300 min-h-screen">
-        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-20 pointer-events-none" />
+        <div className="absolute inset-0 opacity-20 pointer-events-none" />
         
         {/* Header Section with User Stats */}
         <section className="pt-20 pb-4 relative">

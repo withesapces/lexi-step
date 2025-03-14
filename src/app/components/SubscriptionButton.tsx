@@ -3,6 +3,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
 
 type SubscriptionButtonProps = {
   isPro: boolean;
@@ -36,16 +37,19 @@ export function SubscriptionButton({ isPro }: SubscriptionButtonProps) {
   };
 
   return (
-    <button
+    <motion.button
+      whileHover={{ scale: 1.05, rotate: 1 }}
+      whileTap={{ scale: 0.95 }}
       onClick={handleSubscription}
       disabled={isLoading}
-      className="px-4 py-2 font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
+      className="w-full bg-black text-white font-black py-3 px-6 text-xl border-4 border-black hover:bg-yellow-300 hover:text-black transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+      style={{ boxShadow: "8px 8px 0px #000" }}
     >
       {isLoading 
-        ? 'Chargement...' 
+        ? 'CHARGEMENT...' 
         : isPro 
-          ? 'Gérer mon abonnement' 
-          : 'Passer à la version Pro'}
-    </button>
+          ? 'GÉRER MON ABONNEMENT 🧠' 
+          : 'BOOSTER MON CERVEAU 🚀'}
+    </motion.button>
   );
 }

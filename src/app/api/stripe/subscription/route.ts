@@ -1,3 +1,5 @@
+// src/app/api/stripe/subscription/route.ts
+
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -19,6 +21,7 @@ export async function GET(req: Request) {
           stripeSubscriptionId: true,
           stripeCurrentPeriodEnd: true,
           stripeCustomerId: true,
+          isCanceled: true,  // Ajoutez cette ligne pour récupérer le champ isCanceled
         },
       },
     },
@@ -30,13 +33,19 @@ export async function GET(req: Request) {
 
   const isPro = user.isPro;
   const subscription = user.subscription ?? null;
-  const isCanceled = subscription?.stripeSubscriptionId
+  
+  // Vérifiez d'abord si la période est expirée
+  const isExpired = subscription?.stripeSubscriptionId
     ? new Date(subscription.stripeCurrentPeriodEnd ?? 0).getTime() < new Date().getTime()
     : false;
+    
+  // Utilisez soit la valeur explicite de isCanceled de la base de données, soit false si elle n'existe pas
+  const isCanceled = subscription?.isCanceled || false;
 
   return NextResponse.json({
     isPro,
-    isCanceled,
+    isCanceled,  // Cette valeur reflète maintenant l'état réel dans la base de données
+    isExpired,    // Vous pouvez ajouter ce champ si vous en avez besoin
     stripeCustomerId: subscription?.stripeCustomerId ?? null,
     stripeSubscriptionId: subscription?.stripeSubscriptionId ?? null,
     stripeCurrentPeriodEnd: subscription?.stripeCurrentPeriodEnd ?? null,

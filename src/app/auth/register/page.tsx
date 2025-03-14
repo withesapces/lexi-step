@@ -155,7 +155,7 @@ export default function Register() {
 
   return (
     <div className="min-h-screen overflow-hidden bg-yellow-300 flex flex-col items-center justify-center px-4 py-8 relative">
-      <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-20 pointer-events-none" />
+      <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10 pointer-events-none" />
       
       <motion.div
         variants={containerVariants}
